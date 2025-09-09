@@ -99,11 +99,6 @@ export default function Dashboard() {
 				<main className="flex-1 p-6">
 					<Card className="p-6">
 						<h2 className="text-2xl font-bold mb-4">Welcome, Admin!</h2>
-						<p className="text-gray-600">
-							Use the sidebar to navigate between functionalities like user
-							management, employee management, roles management, and assigning
-							roles.
-						</p>
 					</Card>
 				</main>
 			</div>
