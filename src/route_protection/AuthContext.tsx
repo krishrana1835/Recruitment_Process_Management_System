@@ -1,29 +1,33 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type UserRole = 
-  | "Recruiter" 
-  | "HR" 
-  | "Interviewer" 
-  | "Reviewer" 
-  | "Admin" 
-  | "Candidate" 
+export type UserRole =
+  | "Recruiter"
+  | "HR"
+  | "Interviewer"
+  | "Reviewer"
+  | "Admin"
+  | "Candidate"
   | "Viewer";
 
+interface User {
+  isAuthenticated: boolean;
+  token: string;
+  userId: number;
+  email: string;
+  role: UserRole;
+}
+
 interface AuthContextType {
-  user: {
-    isAuthenticated: boolean;
-    token: string;
-    userId: number;
-    email: string;
-    role: UserRole;
-  } | null;
-  setUser: React.Dispatch<React.SetStateAction<AuthContextType["user"]>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<AuthContextType["user"]>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Restore user from localStorage
   useEffect(() => {
@@ -39,10 +43,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.removeItem("user");
       }
     }
+    setLoading(false); // Done loading
   }, []);
 
+  // Sync user to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -141,7 +141,7 @@ export default function Login() {
 
             {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-            <Button className="w-full" type="submit">
+            <Button className="w-full cursor-pointer" type="submit">
               Sign In
             </Button>
 

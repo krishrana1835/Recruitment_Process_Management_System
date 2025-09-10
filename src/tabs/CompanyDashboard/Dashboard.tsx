@@ -14,9 +14,14 @@ interface menu{
 
 const AdminItems = [
 	{ name: "User Management", path: "/dashboard/users" },
-	{ name: "Employee Management", path: "/dashboard/employees" },
-	{ name: "Roles Management", path: "/dashboard/roles" },
-	{ name: "Assign Roles", path: "/dashboard/assign-roles" },
+	{ name: "Job Management", path: "/dashboard/employees" },
+	{ name: "Candidate Management", path: "/dashboard/roles" },
+	{ name: "Resume Review & Sortlisting", path: "/dashboard/assign-roles" },
+	{ name: "Interview Scheduling", path: "/dashboard/interview-schedule" },
+	{ name: "Feedback & Evaluation", path: "/dashboard/feedback" },
+	{ name: "Reports & Analytics", path: "/dashboard/reports" },
+	{ name: "Notifications", path: "/dashboard/notifications" },
+	{ name: "Settings", path: "/dashboard/settings" },
 ];
 
 const HRItems = [
@@ -89,6 +94,7 @@ export default function Dashboard() {
 					</div>
 					<div>
 						<Motionbutton
+						className="cursor-pointer"
                         whileHover={{ boxShadow: '0px 0px 2px 2px #ddd' }}
                         transition={{duration: 0.2}}
                          variant="outline">Logout</Motionbutton>

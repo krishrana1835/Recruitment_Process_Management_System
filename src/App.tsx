@@ -1,9 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./tabs/Login";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./tabs/Authentication/Login";
 import Dashboard from "./tabs/CompanyDashboard/Dashboard";
+import Unauthorized from "./tabs/Authentication/Unauthorized";
 import { AuthProvider } from "./route_protection/AuthContext";
 import { ProtectedRoute } from "./route_protection/ProtectedRoute";
-// import Unauthorized from "; // Create this page
 
 function App() {
   return (
@@ -11,8 +11,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Protected company dashboard route */}
           <Route
             path="/company/dashboard"
             element={
@@ -21,6 +21,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Optional: handle unknown routes */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     </AuthProvider>
