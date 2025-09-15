@@ -31,7 +31,7 @@ export default function Login() {
         const result = await getRoles();
         setRolesData(result);
       } catch (error: any) {
-        setError(error?.message || "Failed to fetch roles");
+        console.error("Failed to fetch roles:", error);
       }
     };
 
@@ -119,22 +119,19 @@ export default function Login() {
               <Label htmlFor="role" className="mb-2 block">
                 Select Role
               </Label>
-              <Select onValueChange={(value) => setRole(value)} value={role}>
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Choose a role" />
+              <Select onValueChange={(val) => setRole(val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  {rolesData.length > 0 ? (
-                    rolesData.map((item) => (
-                      <SelectItem key={item.roleId} value={item.roleName}>
-                        {item.roleName}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="Error" disabled>
-                      No roles available
+                  {rolesData.map((r) => (
+                    <SelectItem
+                      key={r.role_id}
+                      value={r.role_name}
+                    >
+                      {r.role_name}
                     </SelectItem>
-                  )}
+                  ))}
                 </SelectContent>
               </Select>
             </div>

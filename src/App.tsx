@@ -4,6 +4,8 @@ import Dashboard from "./tabs/CompanyDashboard/Dashboard";
 import Unauthorized from "./tabs/Authentication/Unauthorized";
 import { AuthProvider } from "./route_protection/AuthContext";
 import { ProtectedRoute } from "./route_protection/ProtectedRoute";
+import UserManage from "./tabs/CompanyDashboard/Admin/UserManage";
+import UserProfile from "./tabs/CompanyDashboard/Admin/UserProfileView";
 
 function App() {
   return (
@@ -20,7 +22,27 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route
+              path="users"
+              index
+              element={
+                <ProtectedRoute requiredRole={["Admin"]}>
+                  <UserManage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users/profile/:id"
+              index
+              element={
+                <ProtectedRoute requiredRole={["Admin"]}>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Add more nested routes here as needed */}
+          </Route>
 
           {/* Optional: handle unknown routes */}
           <Route path="*" element={<Navigate to="/" />} />

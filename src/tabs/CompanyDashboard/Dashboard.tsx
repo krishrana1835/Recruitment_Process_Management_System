@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Menu } from "lucide-react";
 import { Images } from "@/constants/Images";
 import {motion} from "framer-motion"
@@ -13,7 +12,7 @@ interface menu{
 }
 
 const AdminItems = [
-	{ name: "User Management", path: "/dashboard/users" },
+	{ name: "User Management", path: "users" },
 	{ name: "Job Management", path: "/dashboard/employees" },
 	{ name: "Candidate Management", path: "/dashboard/roles" },
 	{ name: "Resume Review & Sortlisting", path: "/dashboard/assign-roles" },
@@ -50,15 +49,15 @@ export default function Dashboard() {
     },[])
 
 	return (
-		<div className="flex min-h-screen bg-gray-100">
+		<div className="flex h-screen bg-gray-100">
 			{/* Sidebar */}
 			<aside
-				className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transition-transform duration-300 ${
+				className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300 ${
 					sidebarOpen ? "translate-x-0" : "-translate-x-64"
 				} md:translate-x-0 md:static md:block`}
 			>
 				<div className="flex flex-col h-full">
-					<div className="flex items-center justify-center h-16 border-b">
+					<div className="flex items-center justify-center h-16 border-b flex-shrink-0">
 						<span className="text-xl font-bold">{panelName} Panel</span>
 					</div>
 					<nav className="flex-1 px-4 py-6 space-y-2">
@@ -79,9 +78,9 @@ export default function Dashboard() {
 			</aside>
 
 			{/* Main Content */}
-			<div className="flex-1 flex flex-col">
+			<div className="flex-1 flex flex-col overflow-hidden">
 				{/* Navigation Bar */}
-				<header className="flex items-center justify-between h-16 px-6 bg-white shadow-md">
+				<header className="flex items-center justify-between h-16 px-6 bg-white shadow-md flex-shrink-0 z-30">
 					<div className="flex items-center gap-2">
 						<Button
 							variant="ghost"
@@ -102,10 +101,8 @@ export default function Dashboard() {
 				</header>
 
 				{/* Dashboard Content */}
-				<main className="flex-1 p-6">
-					<Card className="p-6">
-						<h2 className="text-2xl font-bold mb-4">Welcome, Admin!</h2>
-					</Card>
+				<main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+					<Outlet/>
 				</main>
 			</div>
 		</div>

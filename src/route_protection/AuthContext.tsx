@@ -29,9 +29,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Restore user from localStorage
+  // Restore user from sessionStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       try {
         const parsed = JSON.parse(storedUser);
@@ -39,19 +39,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(parsed);
         }
       } catch (e) {
-        console.error("Error parsing user from localStorage:", e);
-        localStorage.removeItem("user");
+        console.error("Error parsing user from sessionStorage:", e);
+        sessionStorage.removeItem("user");
       }
     }
     setLoading(false); // Done loading
   }, []);
 
-  // Sync user to localStorage
+  // Sync user to sessionStorage
   useEffect(() => {
     if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+      sessionStorage.setItem("user", JSON.stringify(user));
     } else {
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
     }
   }, [user]);
 
