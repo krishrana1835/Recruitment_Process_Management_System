@@ -1,7 +1,7 @@
-import type { Roles } from "../interfaces/Roles_interface";
+import type { RoleDto } from "../interfaces/Roles_interface";
 const api_url = import.meta.env.VITE_API_URL
 
-export async function getRoles(): Promise<Roles[]> {
+export async function getRoles(): Promise<RoleDto[]> {
   try {
     const response = await fetch(api_url + "/Role", {
       method: "GET",

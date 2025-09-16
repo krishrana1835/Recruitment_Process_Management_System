@@ -1,11 +1,8 @@
-import type { UserInfo, UsersList } from "@/interfaces/User_interface";
+import type { UserInfoDto, UserProfileDto, UsersList } from "@/interfaces/User_interface";
 
 const api_url = import.meta.env.VITE_API_URL;
 
-const user = sessionStorage.getItem("user");
-const token = user ? JSON.parse(user).token : null;
-
-export async function getUsersInfo(): Promise<UsersList[]> {
+export async function getUsersInfo(token: string): Promise<UsersList[]> {
   try {
     const response = await fetch(`${api_url}/Users/GetUserInfo`, {
       method: "GET",
@@ -25,14 +22,13 @@ export async function getUsersInfo(): Promise<UsersList[]> {
       email: user.email,
       role: Array.isArray(user.roles) ? user.roles : [],
     }));
-    console.log(transformedData);
     return transformedData;
   } catch (error) {
-    throw new Error("Network error while fetching roles");
+    throw new Error("Network error while fetching user info");
   }
 }
 
-export async function getUserData(id: string): Promise<UserInfo> {
+export async function getUserData(id: string, token: string): Promise<UserInfoDto> {
   try {
     const response = await fetch(`${api_url}/Users/${id}`, {
       method: "GET",
@@ -46,7 +42,7 @@ export async function getUserData(id: string): Promise<UserInfo> {
       throw new Error(errorText || "Fetching User Data failded");
     }
     const data = await response.json();
-    const transformedData: UserInfo = {
+    const transformedData: UserInfoDto = {
       user_id: data.user_id,
       name: data.name,
       email: data.email,
@@ -55,11 +51,41 @@ export async function getUserData(id: string): Promise<UserInfo> {
     };
     return transformedData;
   } catch (error) {
-    throw new Error("Network error while fetching roles");
+    throw new Error("Network error while fetching user data");
   }
 }
 
-export async function updateUserData(id: string, data: Partial<UserInfo>): Promise<void> {
+export async function getUserProfile(id: string, token: string): Promise<UserProfileDto> {
+  try {
+    const response = await fetch(`${api_url}/Users/GetUserProfile/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Fetching User Profile Data failded");
+    }
+    const data = await response.json();
+    const transformedData: UserProfileDto = {
+      user_id: data.user_id,
+      name: data.name,
+      email: data.email,
+      role: Array.isArray(data.roles) ? data.roles : [],
+      created_at: new Date(data.created_at),
+      interview_feedbacks: Array.isArray(data.interview_feedbacks) ? data.interview_feedbacks : [],
+      candidate_reviews: Array.isArray(data.candidate_reviews) ? data.candidate_reviews : [],
+      jobs_created: Array.isArray(data.jobs_created) ? data.jobs_created : [],
+    }
+    return transformedData;
+  } catch (error) {
+    throw new Error("Network error while fetching user profile data");
+  }
+}
+
+export async function updateUserData(id: string, data: Partial<UserInfoDto>, token: string): Promise<void> {
   try {
     const response = await fetch(`${api_url}/Users/${id}`, {
       method: "PUT",

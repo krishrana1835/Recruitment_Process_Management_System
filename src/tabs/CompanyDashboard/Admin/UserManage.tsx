@@ -5,18 +5,30 @@ import { DataTable } from "@/components/custom/data-table";
 import { Card } from "@/components/ui/card";
 import { userListColumns } from "@/components/custom/column";
 import { Atom } from "react-loading-indicators";
+import { useAuth } from "@/route_protection/AuthContext";
 
 export default function UserManage() {
   const [userList, setUserList] = useState<UsersList[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const {user} = useAuth ();
+
   useEffect(() => {
     const fetchUsers = async () => {
       setError(null);
       setLoading(true);
       try {
-        const res = await getUsersInfo();
+        if(!user){
+          setError("No user logged in");
+          return;
+        }
+        if(!user?.token){
+          setError("No token found for the logged-in user.");
+          return;
+        }
+        if(error) return;
+        const res = await getUsersInfo(user.token);
         setUserList(res);
       } catch (error: Error | any) {
         setError(error.message);

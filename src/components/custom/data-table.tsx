@@ -95,11 +95,12 @@ export function DataTable<TData, TValue>({
         </Select>
         <Input
           placeholder="Filter values..."
-          value={(table.getColumn(searchCol)?.getFilterValue() as string) ?? ""}
+          value={searchCol ? (table.getColumn(searchCol)?.getFilterValue() as string) ?? "" : ""}
           onChange={(event) =>
-            table.getColumn(searchCol)?.setFilterValue(event.target.value)
+            searchCol && table.getColumn(searchCol)?.setFilterValue(event.target.value)
           }
           className="max-w-sm mx-3"
+          disabled={!searchCol}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

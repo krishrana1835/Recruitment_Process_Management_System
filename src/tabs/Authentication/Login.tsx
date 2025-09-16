@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/select";
 import { loginUser } from "@/api/Auth_api";
 import { getRoles } from "@/api/Roles_api";
-import type { Roles } from "@/interfaces/Roles_interface";
+import type { RoleDto } from "@/interfaces/Roles_interface";
 import { useAuth, type UserRole } from "@/route_protection/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-  const [rolesData, setRolesData] = useState<Roles[]>([]);
+  const [rolesData, setRolesData] = useState<RoleDto[]>([]);
   const [error, setError] = useState<null | string>(null);
   const { setUser } = useAuth();
   const navigate = useNavigate();
