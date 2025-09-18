@@ -17,7 +17,7 @@ import { DataTable } from "@/components/custom/data-table";
 import {
   candidateReviewColumns,
   interviewFeedbackColumns,
-  jobColumns,
+  jobsColumns as jobColumns,
 } from "@/components/custom/column";
 
 // --- Main Profile Component ---

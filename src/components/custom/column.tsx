@@ -103,15 +103,29 @@ export const userListColumns: ColumnDef<UsersList>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem className="cursor-pointer"><Link to={`profile/${row.getValue("user_id")}`} className="flex flex-row"><MdOutlinePreview className="size-5 mr-2"/>View User</Link></DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer"><Link to={`profile/${row.getValue("user_id")}`} className="flex flex-row"><FaRegEdit className="size-5 mr-2"/>Update User</Link></DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer"><MdOutlineDelete className="size-5"/> Delete User</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <Link to={`profile/${row.getValue("user_id")}`} className="flex items-center gap-2 w-full">
+                <MdOutlinePreview className="h-5 w-5" />
+                View User
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <Link to={`profile/${row.getValue("user_id")}`} className="flex items-center gap-2 w-full">
+                <FaRegEdit className="h-5 w-5" />
+                Update User
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" className="cursor-pointer flex items-center gap-2">
+              <MdOutlineDelete className="h-5 w-5" />
+              Delete User
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.email)}
-              className="cursor-pointer"
+              className="cursor-pointer flex items-center gap-2"
             >
-              <MdContentCopy className="size-5"/> Copy Email ID
+              <MdContentCopy className="h-5 w-5" />
+              Copy Email ID
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -121,7 +135,6 @@ export const userListColumns: ColumnDef<UsersList>[] = [
 ]
 
 export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
-  // 1. Select Checkbox Column
   {
     id: "select",
     header: ({ table }) => (
@@ -144,8 +157,6 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
-  // 2. Feedback ID Column
   {
     accessorKey: "feedback_id",
     header: "Feedback ID",
@@ -153,8 +164,6 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
       <div className="font-medium text-muted-foreground">{row.getValue("feedback_id")}</div>
     ),
   },
-
-  // 3. Rating Column (Sortable)
   {
     accessorKey: "rating",
     header: ({ column }) => {
@@ -170,8 +179,6 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
     },
     cell: ({ row }) => <div className="text-center">{row.getValue("rating")}</div>,
   },
-
-  // 4. Comments Column
   {
     accessorKey: "comments",
     header: "Comments",
@@ -179,8 +186,6 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
       <div className="truncate max-w-xs">{row.getValue("comments")}</div>
     ),
   },
-
-  // 5. Feedback Date Column (Sortable)
   {
     accessorKey: "feedback_at",
     header: ({ column }) => {
@@ -195,19 +200,15 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
       )
     },
     cell: ({ row }) => {
-        const date = new Date(row.getValue("feedback_at"));
-        const formattedDate = date.toLocaleDateString();
-        return <div>{formattedDate}</div>
+      const date = new Date(row.getValue("feedback_at"));
+      const formattedDate = date.toLocaleDateString();
+      return <div>{formattedDate}</div>
     }
   },
-
-  // 6. Interview ID Column
   {
     accessorKey: "interview_id",
     header: "Interview ID",
   },
-  
-  // 7. Actions Column
   {
     id: "actions",
     enableHiding: false,
@@ -226,20 +227,20 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/feedback/${feedbackId}`} className="flex items-center w-full">
-                    <MdOutlinePreview className="mr-2 h-5 w-5" />
-                    View Feedback
-                </Link>
+              <Link to={`/feedback/${feedbackId}`} className="flex items-center gap-2 w-full">
+                <MdOutlinePreview className="h-5 w-5" />
+                View Feedback
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/feedback/edit/${feedbackId}`} className="flex items-center w-full">
-                    <FaRegEdit className="mr-2 h-5 w-5" />
-                    Update Feedback
-                </Link>
+              <Link to={`/feedback/edit/${feedbackId}`} className="flex items-center gap-2 w-full">
+                <FaRegEdit className="h-5 w-5" />
+                Update Feedback
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-red-600">
-                <MdOutlineDelete className="mr-2 h-5 w-5" /> 
-                Delete Feedback
+            <DropdownMenuItem variant="destructive" className="cursor-pointer flex items-center gap-2">
+              <MdOutlineDelete className="h-5 w-5" />
+              Delete Feedback
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -249,7 +250,6 @@ export const interviewFeedbackColumns: ColumnDef<Interview_FeedbackDto>[] = [
 ]
 
 export const candidateReviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
-  // 1. Select Checkbox Column
   {
     id: "select",
     header: ({ table }) => (
@@ -272,8 +272,6 @@ export const candidateReviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
-  // 2. Review ID Column
   {
     accessorKey: "review_id",
     header: "Review ID",
@@ -281,52 +279,27 @@ export const candidateReviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
       <div className="font-medium text-muted-foreground">{row.getValue("review_id")}</div>
     ),
   },
-
-  // 3. Comments Column
+  {
+    accessorKey: "candidate_name",
+    header: "Candidate Name",
+  },
+  {
+    accessorKey: "reviewer_name",
+    header: "Reviewer Name",
+  },
   {
     accessorKey: "comments",
     header: "Comments",
-    cell: ({ row }) => (
-        // Truncate long comments for better table layout
-        <div className="truncate max-w-sm">{row.getValue("comments")}</div>
-    ),
   },
-
-  // 4. Reviewed Date Column (Sortable)
   {
-    accessorKey: "reviewed_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Reviewed Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    accessorKey: "review_date",
+    header: "Review Date",
     cell: ({ row }) => {
-        const date = new Date(row.getValue("reviewed_at"));
-        // Formats the date to a more readable local format (e.g., "9/17/2025")
-        const formattedDate = date.toLocaleDateString();
-        return <div>{formattedDate}</div>
+      const date = new Date(row.getValue("review_date"));
+      const formattedDate = date.toLocaleDateString();
+      return <div>{formattedDate}</div>
     }
   },
-
-  // 5. Candidate ID Column
-  {
-    accessorKey: "candidate_id",
-    header: "Candidate ID",
-  },
-  
-  // 6. Job ID Column
-  {
-    accessorKey: "job_id",
-    header: "Job ID",
-  },
-
-  // 7. Actions Column
   {
     id: "actions",
     enableHiding: false,
@@ -345,20 +318,20 @@ export const candidateReviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/reviews/${reviewId}`} className="flex items-center w-full">
-                    <MdOutlinePreview className="mr-2 h-5 w-5" />
-                    View Review
-                </Link>
+              <Link to={`/review/${reviewId}`} className="flex items-center gap-2 w-full">
+                <MdOutlinePreview className="h-5 w-5" />
+                View Review
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/reviews/edit/${reviewId}`} className="flex items-center w-full">
-                    <FaRegEdit className="mr-2 h-5 w-5" />
-                    Update Review
-                </Link>
+              <Link to={`/review/edit/${reviewId}`} className="flex items-center gap-2 w-full">
+                <FaRegEdit className="h-5 w-5" />
+                Update Review
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-500">
-                <MdOutlineDelete className="mr-2 h-5 w-5" /> 
-                Delete Review
+            <DropdownMenuItem variant="destructive" className="cursor-pointer flex items-center gap-2">
+              <MdOutlineDelete className="h-5 w-5" />
+              Delete Review
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -367,8 +340,7 @@ export const candidateReviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
   },
 ]
 
-export const jobColumns: ColumnDef<JobDto>[] = [
-  // 1. Select Checkbox Column
+export const jobStatusColumns: ColumnDef<Jobs_StatusDto>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -391,8 +363,84 @@ export const jobColumns: ColumnDef<JobDto>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  {
+    accessorKey: "status_id",
+    header: "Status ID",
+    cell: ({ row }) => (
+      <div className="font-medium text-muted-foreground">{row.getValue("status_id")}</div>
+    ),
+  },
+  {
+    accessorKey: "status_name",
+    header: "Status Name",
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const statusId = row.original.status_id;
 
-  // 2. Job ID Column
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              <Link to={`/status/${statusId}`} className="flex items-center gap-2 w-full">
+                <MdOutlinePreview className="h-5 w-5" />
+                View Status
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <Link to={`/status/edit/${statusId}`} className="flex items-center gap-2 w-full">
+                <FaRegEdit className="h-5 w-5" />
+                Update Status
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" className="cursor-pointer flex items-center gap-2">
+              <MdOutlineDelete className="h-5 w-5" />
+              Delete Status
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
+]
+
+export const jobsColumns: ColumnDef<JobDto>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "job_id",
     header: "Job ID",
@@ -400,71 +448,18 @@ export const jobColumns: ColumnDef<JobDto>[] = [
       <div className="font-medium text-muted-foreground">{row.getValue("job_id")}</div>
     ),
   },
-
-  // 3. Job Title Column (Sortable)
   {
-    accessorKey: "job_title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Job Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("job_title")}</div>,
+    accessorKey: "title",
+    header: "Job Title",
   },
-
-  // 4. Description Column
   {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-        <div className="truncate max-w-md">{row.getValue("description")}</div>
-    ),
+    accessorKey: "department",
+    header: "Department",
   },
-
-  // 5. Status Column (Handles nested object)
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-        // Accessing the nested status_name property from the status object
-        const status = row.getValue("status") as Jobs_StatusDto;
-        return <div className="font-medium capitalize">{status?.status || "N/A"}</div>
-    },
-    // Optional: Enable filtering on this column
-    filterFn: (row, id, value) => {
-      const status = row.getValue(id) as Jobs_StatusDto;
-      return value.includes(status?.status);
-    },
+    accessorKey: "location",
+    header: "Location",
   },
-
-  // 6. Created Date Column (Sortable)
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-        const date = new Date(row.getValue("created_at"));
-        const formattedDate = date.toLocaleDateString();
-        return <div>{formattedDate}</div>
-    }
-  },
-  
-  // 7. Actions Column
   {
     id: "actions",
     enableHiding: false,
@@ -483,20 +478,20 @@ export const jobColumns: ColumnDef<JobDto>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/jobs/${jobId}`} className="flex items-center w-full">
-                    <MdOutlinePreview className="mr-2 h-5 w-5" />
-                    View Job
-                </Link>
+              <Link to={`/job/${jobId}`} className="flex items-center gap-2 w-full">
+                <MdOutlinePreview className="h-5 w-5" />
+                View Job
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-                <Link to={`/jobs/edit/${jobId}`} className="flex items-center w-full">
-                    <FaRegEdit className="mr-2 h-5 w-5" />
-                    Update Job
-                </Link>
+              <Link to={`/job/edit/${jobId}`} className="flex items-center gap-2 w-full">
+                <FaRegEdit className="h-5 w-5" />
+                Update Job
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-500">
-                <MdOutlineDelete className="mr-2 h-5 w-5" /> 
-                Delete Job
+            <DropdownMenuItem variant="destructive" className="cursor-pointer flex items-center gap-2">
+              <MdOutlineDelete className="h-5 w-5" />
+              Delete Job
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
