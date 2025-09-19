@@ -50,12 +50,31 @@ export default function Login() {
     ].includes(role);
   };
 
+  const validateEmail = (email: string) => {
+    const regex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    return regex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 6;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!email || !password || !role) {
       setError("Please fill all fields.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email.");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -69,13 +88,11 @@ export default function Login() {
         email: result.user.email,
         role: isUserRole(result.user.role) ? result.user.role : "Viewer",
       };
-      // Update context
+
       setUser(userdata);
 
-      // Save to localStorage
       localStorage.setItem("user", JSON.stringify(userdata));
 
-      // Optional: Redirect based on role
       navigate(`/company/dashboard`);
     } catch (error: any) {
       setError(error?.message || "Login failed");
@@ -125,10 +142,7 @@ export default function Login() {
                 </SelectTrigger>
                 <SelectContent>
                   {rolesData.map((r) => (
-                    <SelectItem
-                      key={r.role_id}
-                      value={r.role_name}
-                    >
+                    <SelectItem key={r.role_id} value={r.role_name}>
                       {r.role_name}
                     </SelectItem>
                   ))}
