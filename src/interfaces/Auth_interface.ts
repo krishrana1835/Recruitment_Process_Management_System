@@ -1,16 +1,19 @@
+// Interface for user login data transfer object
 export interface UserLoginDto {
-  email: string;
-  password: string;
-  role: string;
+  email: string; // User's email address
+  password: string; // User's password
+  role: string; // User's role
 }
 
+// Interface for a simplified user object, typically used after authentication
 export interface User {
-  id: number;
-  email: string;
-  role: string;
+  id: number; // Unique identifier for the user
+  email: string; // User's email address
+  role: string; // User's role
 }
 
+// Interface for the response received after a successful login attempt
 export interface LoginResponse {
-  token: string;
-  user: User;
+  token: string; // Authentication token (e.g., JWT)
+  user: User; // User object containing basic user information
 }
