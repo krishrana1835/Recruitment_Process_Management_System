@@ -186,7 +186,7 @@ const UserProfile = ({ allowUpdate }: { allowUpdate: boolean }) => {
                       prev ? { ...prev, email: e.target.value } : null
                     )
                   }
-                  disabled={!allowUpdate} // Disable input if updates are not allowed
+                  disabled // Disable input if updates are not allowed
                 />
               </div>
               <div>
