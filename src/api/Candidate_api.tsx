@@ -1,4 +1,10 @@
-import type { CandidateListDto, CreateCandidateDto, DeleteBulkCandidate, UpdateBulkCandidate, CandidateProfileDto } from "@/interfaces/Candidate_interface";
+import type {
+  CandidateListDto,
+  CreateCandidateDto,
+  DeleteBulkCandidate,
+  UpdateBulkCandidate,
+  CandidateProfileDto,
+} from "@/interfaces/Candidate_interface";
 import { sendMail } from "./Email_api";
 
 const api_url = import.meta.env.VITE_API_URL;
@@ -10,7 +16,9 @@ const api_url = import.meta.env.VITE_API_URL;
  * @returns {Promise<CandidateListDto[]>} A promise that resolves to an array of candidate objects.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function getCandidateList(token: string): Promise<CandidateListDto[]> {
+export async function getCandidateList(
+  token: string
+): Promise<CandidateListDto[]> {
   try {
     const response = await fetch(`${api_url}/Candidate/GetCandidateList`, {
       method: "GET",
@@ -40,15 +48,21 @@ export async function getCandidateList(token: string): Promise<CandidateListDto[
  * @returns {Promise<CandidateProfileDto>} A promise that resolves to the candidate's profile data.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function getCandidateProfile(id: string, token: string): Promise<CandidateProfileDto> {
+export async function getCandidateProfile(
+  id: string,
+  token: string
+): Promise<CandidateProfileDto> {
   try {
-    const response = await fetch(`${api_url}/Candidate/GetCandidateProfile/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${api_url}/Candidate/GetCandidateProfile/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -118,11 +132,20 @@ export async function createCandidate(
       throw new Error(errorText || "Creating candidate failed");
     }
 
-    await sendMail(newCandidate.email, "Your Candidate Profile in Roima's Dashbord has been Created.", `This is your temporary password "${newCandidate.password}", please do not share to anyone.`, token)
+    try {
+      await sendMail(
+        newCandidate.email,
+        "Your Candidate Profile in Roima's Dashbord has been Created.",
+        `This is your temporary password "${newCandidate.password}", please do not share to anyone.`,
+        token
+      );
+    } catch (error: any) {
+      throw new Error(error?.message || "Error sending email");
+    }
 
     return await response.json();
   } catch (error: any) {
-    throw new Error(error?.message ||"Network error while creating candidate");
+    throw new Error(error?.message || "Network error while creating candidate");
   }
 }
 
@@ -134,9 +157,12 @@ export async function createCandidate(
  * @returns {Promise<void>} A promise that resolves when the candidate is successfully deleted.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function deleteCandidate(id: string, token: string): Promise<void> {
-     try {
-     const response = await fetch(`${api_url}/Candidate/DeleteCandidate/${id}`, {
+export async function deleteCandidate(
+  id: string,
+  token: string
+): Promise<void> {
+  try {
+    const response = await fetch(`${api_url}/Candidate/DeleteCandidate/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -159,7 +185,10 @@ export async function deleteCandidate(id: string, token: string): Promise<void> 
  * @returns {Promise<string[] | string>} A promise that resolves to a list of emails that were not inserted, or a success message.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function candidateBulkInsert(data: CreateCandidateDto[], token: string): Promise<string[] | string> {
+export async function candidateBulkInsert(
+  data: CreateCandidateDto[],
+  token: string
+): Promise<string[] | string> {
   try {
     const response = await fetch(`${api_url}/Candidate/AddBulkCandidate`, {
       method: "POST",
@@ -175,17 +204,20 @@ export async function candidateBulkInsert(data: CreateCandidateDto[], token: str
       throw new Error(errorText || "Adding excel candidates failed");
     }
 
-    const responseData: { message: string; candidate_list: string[] } = await response.json();
+    const responseData: { message: string; candidate_list: string[] } =
+      await response.json();
 
-    const insertedCandidates = data.filter(candidate =>
+    const insertedCandidates = data.filter((candidate) =>
       responseData.candidate_list.includes(candidate.email)
     );
 
-    const notinsertedCandidates = data.filter(candidate =>
-      !responseData.candidate_list.includes(candidate.email)
+    const notinsertedCandidates = data.filter(
+      (candidate) => !responseData.candidate_list.includes(candidate.email)
     );
 
-    const emailOfNotInsertedCandidates = notinsertedCandidates.map(candidate => candidate.email)
+    const emailOfNotInsertedCandidates = notinsertedCandidates.map(
+      (candidate) => candidate.email
+    );
 
     for (const candidate of insertedCandidates) {
       try {
@@ -196,20 +228,21 @@ export async function candidateBulkInsert(data: CreateCandidateDto[], token: str
           token
         );
       } catch (err: any) {
-        console.error(`Failed to send email to ${candidate.email}:`, err.message);
+        console.error(
+          `Failed to send email to ${candidate.email}:`,
+          err.message
+        );
       }
     }
 
-    if(notinsertedCandidates.length > 0)
-      return emailOfNotInsertedCandidates;
-    else
-      return responseData.message;
-
+    if (notinsertedCandidates.length > 0) return emailOfNotInsertedCandidates;
+    else return responseData.message;
   } catch (error: any) {
-    throw new Error(error?.message || "Network error while creating excel candidates");
+    throw new Error(
+      error?.message || "Network error while creating excel candidates"
+    );
   }
 }
-
 
 /**
  * Updates a bulk list of candidates in the system.
@@ -219,7 +252,10 @@ export async function candidateBulkInsert(data: CreateCandidateDto[], token: str
  * @returns {Promise<string[] | string>} A promise that resolves to a list of emails that were not updated, or a success message.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function candidateBulkUpdate(data: UpdateBulkCandidate[], token: string): Promise<string[] | string> {
+export async function candidateBulkUpdate(
+  data: UpdateBulkCandidate[],
+  token: string
+): Promise<string[] | string> {
   try {
     const response = await fetch(`${api_url}/Candidate/UpdateBulkCandidate`, {
       method: "PUT",
@@ -235,25 +271,28 @@ export async function candidateBulkUpdate(data: UpdateBulkCandidate[], token: st
       throw new Error(errorText || "Updating candidates failed");
     }
 
-    const responseData: { message: string; candidate_list: string[] } = await response.json();
+    const responseData: { message: string; candidate_list: string[] } =
+      await response.json();
 
-    const notUpdatedCandidates = data.filter(candidate =>
-      !responseData.candidate_list.includes(candidate.email)
+    const notUpdatedCandidates = data.filter(
+      (candidate) => !responseData.candidate_list.includes(candidate.email)
     );
 
-    const emailOfNotUpdatedCandidates = notUpdatedCandidates.map(candidate => candidate.email);
+    const emailOfNotUpdatedCandidates = notUpdatedCandidates.map(
+      (candidate) => candidate.email
+    );
 
     if (emailOfNotUpdatedCandidates.length > 0) {
       return emailOfNotUpdatedCandidates;
     } else {
       return responseData.message;
     }
-
   } catch (error: any) {
-    throw new Error(error?.message || "Network error while updating candidates");
+    throw new Error(
+      error?.message || "Network error while updating candidates"
+    );
   }
 }
-
 
 /**
  * Deletes a bulk list of candidates from the system.
@@ -263,7 +302,10 @@ export async function candidateBulkUpdate(data: UpdateBulkCandidate[], token: st
  * @returns {Promise<string[] | string>} A promise that resolves to a list of candidate IDs that were not deleted, or a success message.
  * @throws {Error} Throws an error if the API request fails or if the response is not successful.
  */
-export async function candidateBulkDelete(data: DeleteBulkCandidate[], token: string): Promise<string[] | string> {
+export async function candidateBulkDelete(
+  data: DeleteBulkCandidate[],
+  token: string
+): Promise<string[] | string> {
   try {
     const response = await fetch(`${api_url}/Candidate/DeleteBulkCandidate`, {
       method: "DELETE",
@@ -279,21 +321,26 @@ export async function candidateBulkDelete(data: DeleteBulkCandidate[], token: st
       throw new Error(errorText || "Deleting candidates failed");
     }
 
-    const responseData: { message: string; candidate_list: string[] } = await response.json();
+    const responseData: { message: string; candidate_list: string[] } =
+      await response.json();
 
-    const notDeletedCandidates = data.filter(candidate =>
-      !responseData.candidate_list.includes(candidate.candidate_id)
+    const notDeletedCandidates = data.filter(
+      (candidate) =>
+        !responseData.candidate_list.includes(candidate.candidate_id)
     );
 
-    const emailOfNotDeletedCandidates = notDeletedCandidates.map(candidate => candidate.candidate_id);
+    const emailOfNotDeletedCandidates = notDeletedCandidates.map(
+      (candidate) => candidate.candidate_id
+    );
 
     if (emailOfNotDeletedCandidates.length > 0) {
       return emailOfNotDeletedCandidates;
     } else {
       return responseData.message;
     }
-
   } catch (error: any) {
-    throw new Error(error?.message || "Network error while deleting candidates");
+    throw new Error(
+      error?.message || "Network error while deleting candidates"
+    );
   }
 }
