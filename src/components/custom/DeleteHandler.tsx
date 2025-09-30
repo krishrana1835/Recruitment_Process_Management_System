@@ -4,86 +4,85 @@ import { deleteUser } from "@/api/Users_api";
 import { useAuth } from "@/route_protection/AuthContext";
 import { Card } from "../ui/card";
 import { Atom } from "react-loading-indicators";
+import { deleteCandidate } from "@/api/Candidate_api";
 
-// DeleteHandler component handles deletion of various entities based on URL parameters
+/**
+ * A component that handles the deletion of different types of data based on the URL parameters.
+ * It uses the `deleteapi` and `deleteid` parameters from the URL to determine what to delete.
+ * @returns {JSX.Element} A loading indicator while the deletion is in progress.
+ */
 const DeleteHandler = () => {
-  // Extract parameters from the URL: deleteapi (e.g., "users", "company") and deleteid (the ID of the item to delete)
   const { deleteapi, deleteid } = useParams();
-  // Hook to programmatically navigate
   const navigate = useNavigate();
-  // Get user authentication context
   const { user } = useAuth();
 
-  // useEffect hook to perform deletion logic when component mounts or parameters change
+  /**
+   * This effect handles the deletion logic when the component mounts or the URL parameters change.
+   * It confirms the deletion with the user, calls the appropriate delete API, and then navigates away.
+   */
   useEffect(() => {
-    // Check if a user is logged in
     if (!user) {
       alert("No user logged in");
       return;
     }
 
-    // Ensure both deleteapi and deleteid parameters are present
     if (!deleteapi || !deleteid) return;
 
-    // Check if the user has an authentication token
     if (!user?.token) {
       alert("Unauthorized");
-      navigate("/login"); // Redirect to login if unauthorized
+      navigate("/login", { replace: true }); // Use replace to prevent back button from going to the delete page
       return;
     }
 
-    // Asynchronous function to confirm and perform the deletion
     const confirmAndDelete = async () => {
-      // Ask for user confirmation before proceeding with deletion
       const confirm = window.confirm(
         `Are you sure you want to delete this ${deleteid}?`
       );
       if (!confirm) {
-        navigate(-1); // Go back to the previous page if deletion is canceled
+        navigate("/", { replace: true }); // Prevent back to deletion
         return;
       }
 
       try {
-        // Use a switch statement to handle different deletion APIs based on 'deleteapi' parameter
         switch (deleteapi) {
-          case "users":
-            // Call the deleteUser API for user deletion
+          // Handle user deletion
+          case "users-data":
             await deleteUser(deleteid, user.token);
             alert("User deleted successfully");
             break;
+          // Handle candidate deletion
+          case "candidates-data":
+            await deleteCandidate(deleteid, user.token);
+            alert("Candidate deleted successfully");
+            break;
+          // Handle company deletion (currently commented out)
           case "company":
-            // Placeholder for company deletion logic
-            // await deleteCompany(deleteid, token);
+            // await deleteCompany(deleteid, user.token);
             alert("Company deleted successfully");
             break;
-          // 🔁 Add more cases as needed for other deletable entities
           default:
             alert(`Unknown delete type: ${deleteapi}`);
-            navigate(-1); // Go back if the deleteapi type is unknown
+            navigate("/", { replace: true });
             return;
         }
 
-        // ✅ Redirect after successful deletion to the appropriate dashboard section
-        navigate(`/company/dashboard/${deleteapi}`);
+        // Redirect and remove current route from history
+        navigate(`/company/dashboard/${deleteapi.split("-")[0]}`, { replace: true });
+
       } catch (error: any) {
-        // Display an error message if deletion fails
         alert(`Failed to delete ${deleteapi}: ${error.message}`);
-        navigate(-1); // Go back on error
+        navigate("/", { replace: true });
       }
     };
 
-    confirmAndDelete(); // Execute the confirmation and deletion process
-  }, [deleteapi, deleteid, navigate, user]); // Dependencies for useEffect
+    confirmAndDelete();
+  }, [deleteapi, deleteid, navigate, user]);
 
-  // Render a loading indicator while the deletion process is ongoing
-  return <Card className="w-full h-full p-4 flex justify-center items-center">
-        <Atom
-        color="#000000"
-        size="medium"
-        text="Deleting..."
-        textColor=""
-      />
-      </Card>;
+  return (
+    <Card className="w-full h-full p-4 flex justify-center items-center">
+      <Atom color="#000000" size="medium" text="Deleting..." />
+    </Card>
+  );
 };
 
 export default DeleteHandler;

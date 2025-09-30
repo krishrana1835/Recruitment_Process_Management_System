@@ -9,3 +9,8 @@ export interface JobDto{
     status_id: number; // Foreign key for the job's status
     status: Jobs_StatusDto; // Object containing job status details
 }
+
+export interface JobDtoCandidate{
+    job_id: number;
+    job_title: string;
+}

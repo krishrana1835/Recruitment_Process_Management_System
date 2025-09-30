@@ -18,7 +18,7 @@ import {
   candidateReviewColumns,
   interviewFeedbackColumns,
   jobColumns,
-} from "@/components/custom/column";
+} from "@/components/custom/columns";
 import type { UserUpdateDto } from "@/interfaces/User_interface";
 
 /**

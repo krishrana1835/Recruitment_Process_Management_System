@@ -19,7 +19,7 @@ interface menu{
 const AdminItems = [
 	{ name: "User Management", path: "users" },
 	{ name: "Job Management", path: "/dashboard/employees" },
-	{ name: "Candidate Management", path: "/dashboard/roles" },
+	{ name: "Candidate Management", path: "candidates" },
 	{ name: "Resume Review & Sortlisting", path: "/dashboard/assign-roles" },
 	{ name: "Interview Scheduling", path: "/dashboard/interview-schedule" },
 	{ name: "Feedback & Evaluation", path: "/dashboard/feedback" },
