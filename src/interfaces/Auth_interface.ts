@@ -7,7 +7,7 @@ export interface UserLoginDto {
 
 // Interface for a simplified user object, typically used after authentication
 export interface User {
-  id: number; // Unique identifier for the user
+  userId: string; // Unique identifier for the user
   email: string; // User's email address
   role: string; // User's role
 }

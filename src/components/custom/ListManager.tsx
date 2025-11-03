@@ -6,41 +6,35 @@ import { useAuth } from "@/route_protection/AuthContext";
 import { MdOutlineAdd } from "react-icons/md";
 import { Link } from "react-router-dom";
 
-/**
- * Props for the ListManager component.
- * @template T - The type of data being listed.
- */
 interface ListManagerProps<T> {
-  /** API function to fetch the list (must return Promise<T[]>) */
-  fetchFunction: (token: string) => Promise<T[]>;
-  /** Route to navigate to on "Add" button click */
+  /** API function to fetch the list (returns Promise<T[]>) */
+  fetchFunction: (...args: any[]) => Promise<T[]>;
+  /** Optional arguments to pass before token */
+  fetchArgs?: any[];
+  /** Route for the Add button */
   addLink: string;
-  /** Column configuration for the DataTable */
+  /** Table column configuration */
   columns: any;
-  /** Show Add button on page */
+  /** Show or hide Add button */
   addButton: boolean;
 }
 
 /**
- * ListManager is a reusable component that fetches and displays a list of data
- * (e.g., users, candidates) using a generic table layout.
- *
- * It handles loading, authentication, and error states automatically.
- *
- * @template T - The type of data being listed (e.g., UsersList or CandidateListDto)
- * @param {ListManagerProps<T>} props - The props for the component.
- * @returns {JSX.Element} The ListManager component.
+ * Generic ListManager that can handle any fetch function and arguments dynamically.
  */
-export default function ListManager<T>({ fetchFunction, addLink, columns, addButton }: ListManagerProps<T>) {
+export default function ListManager<T>({
+  fetchFunction,
+  fetchArgs = [],
+  addLink,
+  columns,
+  addButton,
+}: ListManagerProps<T>) {
   const [dataList, setDataList] = useState<T[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const { user } = useAuth();
 
-  /**
-   * Fetches the data when the component mounts.
-   */
   useEffect(() => {
     const fetchData = async () => {
       setError(null);
@@ -59,7 +53,8 @@ export default function ListManager<T>({ fetchFunction, addLink, columns, addBut
       }
 
       try {
-        const result = await fetchFunction(user.token);
+        const args = fetchArgs.length > 0 ? [...fetchArgs, user.token] : [user.token];
+        const result = await fetchFunction(...args);
         setDataList(result);
       } catch (err: any) {
         setError(err.message || "An error occurred while fetching data.");
@@ -69,9 +64,8 @@ export default function ListManager<T>({ fetchFunction, addLink, columns, addBut
     };
 
     fetchData();
-  }, []);
+  }, [user, JSON.stringify(fetchArgs)]); // re-fetch if user or args change
 
-  // Display a loading indicator while fetching data.
   if (loading) {
     return (
       <Card className="w-full h-full p-4 flex justify-center items-center">
@@ -80,7 +74,6 @@ export default function ListManager<T>({ fetchFunction, addLink, columns, addBut
     );
   }
 
-  // Display an error message if fetching data fails.
   if (error) {
     return (
       <div className="flex items-center justify-center w-full h-full text-red-500">
@@ -92,21 +85,21 @@ export default function ListManager<T>({ fetchFunction, addLink, columns, addBut
   return (
     <Card className="w-full p-4">
       {dataList && (
-        <div className="">
-          {
-            // Conditionally render the "Add" button.
-            addButton ? (
-              <div className="w-full flex justify-end mb-2">
-            <Link
-              to={addLink}
-              className="flex items-center gap-2 p-2 shadow-md rounded-lg bg-gray-600 text-white hover:bg-black duration-200"
-            >
-              <MdOutlineAdd />
-              Add
-            </Link>
-          </div>
-            ):(<></>)
-          }
+        <div>
+          {addButton && (
+            <div className="w-full flex justify-end mb-2">
+              <Link
+                to={addLink}
+                className="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 
+               text-sm font-medium text-white shadow-sm transition 
+               hover:bg-gray-900 hover:shadow-md focus:outline-none 
+               focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+              >
+                <MdOutlineAdd className="text-lg" />
+                Add
+              </Link>
+            </div>
+          )}
           <DataTable columns={columns} data={dataList} />
         </div>
       )}

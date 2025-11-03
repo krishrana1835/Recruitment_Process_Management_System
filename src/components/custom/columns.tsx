@@ -28,6 +28,9 @@ import { Badge } from "../ui/badge";
 import type { CandidateDocumentDto } from "@/interfaces/Candidate_Documents_interface";
 import type { InterviewDtoCandidate } from "@/interfaces/Interview_interface";
 import type { CandidateStatusHistoryDto } from "@/interfaces/Candidate_Status_History_interface";
+import { notify } from "./Notifications";
+
+const document_url = import.meta.env.VITE_DOCUMENT_URL;
 
 /**
  * @file This file contains column definitions for various data tables used in the application.
@@ -159,7 +162,10 @@ export const userListColumns: ColumnDef<UsersList>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.email)}
+              onClick={() => {
+                navigator.clipboard.writeText(user.email)
+                notify.success("Copied", "Email copied.")
+              }}
               className="cursor-pointer"
             >
               <MdContentCopy className="size-5" /> Copy Email ID
@@ -424,10 +430,10 @@ export const jobColumns: ColumnDef<JobDto>[] = [
 
   // Description Column
   {
-    accessorKey: "description",
+    accessorKey: "job_description",
     header: "Description",
     cell: ({ row }) => (
-      <div className="truncate max-w-md">{row.getValue("description")}</div>
+      <div className="truncate max-w-md">{row.getValue("job_description")}</div>
     ),
   },
 
@@ -614,7 +620,10 @@ export const candidateListColumns: ColumnDef<CandidateListDto>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(candidate.email)}
+              onClick={() => {
+                navigator.clipboard.writeText(candidate.email)
+                notify.success("Cpoied", "Email copied.")
+              }}
               className="cursor-pointer"
             >
               <MdContentCopy className="size-5" /> Copy Email
@@ -638,7 +647,7 @@ export const documentColumns: ColumnDef<CandidateDocumentDto>[] = [
       const document = row.original;
       return (
         <a
-          href={document.file_path}
+          href={document_url + document.file_path}
           target="_blank"
           rel="noopener noreferrer"
           className="font-medium text-primary underline-offset-4 hover:underline"
@@ -703,7 +712,7 @@ export const documentColumns: ColumnDef<CandidateDocumentDto>[] = [
       return (
         <div className="text-right">
           <Button asChild variant="ghost" size="icon">
-            <a href={document.file_path} download>
+            <a href={"http://localhost:5146" + document.file_path} download>
               <Download className="h-4 w-4" />
               <span className="sr-only">Download document</span>
             </a>
@@ -1020,6 +1029,13 @@ export const candidateStatusHistoryColumns: ColumnDef<CandidateStatusHistoryDto>
         accessorKey: "reason",
         header: "Reason",
         cell: ({ row }) => <div className="w-[300px] whitespace-normal">{row.getValue("reason")}</div>
+    },
+    {
+        accessorKey: "job",
+        header: "Job Title",
+        cell: ({ row }) => {
+          return <div className="capitalize">{row.original.job.job_title}</div>;
+        }
     },
     {
         accessorKey: "changed_at",

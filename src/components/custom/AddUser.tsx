@@ -10,6 +10,9 @@ import { getRoles } from "@/api/Roles_api";
 import { createUser, getLastUserId } from "@/api/Users_api";
 import { generateRandomPassword } from "./PasswordGenerator";
 import { sendMail } from "@/api/Email_api";
+import { Input } from "../ui/input";
+import { Label } from "@radix-ui/react-label";
+import { notify } from "./Notifications";
 
 /**
  * @interface LastId
@@ -152,10 +155,11 @@ const AddUser = () => {
     try {
       // Call the API to create the user
       await createUser(userData, selectedRoles, user.token);
-      alert("User created successfully!"); // Show success message
+      notify.success("Success","User created successfully!"); // Show success message
       sendMail(userData?.email, "User Account Creted in Roima's Dashboard", "Welcome! Your passowrd is ("+userData.password+") Please don't share with anyone.",  user.token);
     } catch (error: any) {
-      setError(error.message); // Display error message
+      setError(error.message);
+      notify.error("Error", "Faild to create job")
     } finally {
       setLoading(false);
     }
@@ -196,13 +200,13 @@ const AddUser = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label
+                <Label
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Name
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
                   id="name"
                   className="border block w-full bg-white border-gray-300 rounded-md text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm h-10 px-3"
@@ -211,17 +215,18 @@ const AddUser = () => {
                     setUserData((prev) => ({ ...prev, name: e.target.value }))
                   }
                   required
+                  placeholder="Full name of user..."
                 />
               </div>
 
               <div>
-                <label
+                <Label
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Email
-                </label>
-                <input
+                </Label>
+                <Input
                   type="email"
                   id="email"
                   className="border block w-full bg-white border-gray-300 rounded-md text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm h-10 px-3"
@@ -230,17 +235,18 @@ const AddUser = () => {
                     setUserData((prev) => ({ ...prev, email: e.target.value }))
                   }
                   required
+                  placeholder="krish@example.com"
                 />
               </div>
 
               <div>
-                <label
+                <Label
                   htmlFor="employee-id"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   Employee ID
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
                   id="employee-id"
                   className="border block w-full bg-white border-gray-300 rounded-md text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm h-10 px-3"

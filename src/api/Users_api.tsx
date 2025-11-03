@@ -2,12 +2,15 @@
 import type { LastId } from "@/components/custom/AddUser";
 import type { RoleDto } from "@/interfaces/Roles_interface";
 import type {
+  ResetUserPasswordDto,
   UserCreateDto,
+  UserDashboardProfileData,
   UserInfoDto,
   UserProfileDto,
   UsersList,
   UserUpdateDto,
 } from "@/interfaces/User_interface";
+import { sendMail } from "@/api/Email_api";
 
 // Get the API URL from environment variables
 const api_url = import.meta.env.VITE_API_URL;
@@ -174,6 +177,33 @@ export async function getUserProfile(
   }
 }
 
+export async function getUserProfileData(
+  id: string,
+  token: string
+): Promise<UserDashboardProfileData> {
+  try {
+    // Make a PUT request to update user data
+    const response = await fetch(`${api_url}/Users/GetUserProfileToUpdate/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Check if the response was successful
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Error in fetching user profile data");
+    }
+
+    return response.json();
+  } catch (error) {
+    throw new Error("Network error while fetching user data");
+  }
+}
+
+
 /**
  * Updates partial user data for a specific user.
  * @param id - The ID of the user to update.
@@ -312,5 +342,81 @@ export async function deleteUser(id: string, token: string): Promise<void> {
     return await response.json();
   } catch (error) {
     throw new Error("Network error while deleting user");
+  }
+}
+
+export async function resetUserPassword(
+  payload: ResetUserPasswordDto,
+  token: string
+): Promise<{success: boolean; message: string}> {
+  try {
+    const response = await fetch(`${api_url}/Users/UpdatePassword`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "updating user password failed");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error updating user password:", error);
+    throw new Error(error?.message || "Network error while updating user password");
+  }
+}
+
+export async function UpdateUserDashProfile(
+  payload: UserDashboardProfileData,
+  email: string,
+  token: string
+): Promise<UserDashboardProfileData> {
+  try {
+    const response = await fetch(
+      `${api_url}/Users/UpdateProfile`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "updating user profile failed");
+    }
+
+    try {
+      await sendMail(
+        email,
+        "Roima User Profile Updated",
+        `
+        <p>Your profile has been updated. This is the user information:</p>
+        <p>
+          <b>Name:</b> ${payload.name}<br>
+          <b>Email:</b> ${payload.email}
+        </p>
+      `,
+        token
+      );
+    } catch (error: any) {
+      console.error("Error sending email:", error.message);
+      throw new Error("Error sending updation mail");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error updating user profile", error);
+    throw new Error(
+      error?.message || "Network error while updating user profile"
+    );
   }
 }

@@ -5,3 +5,9 @@ export interface CandidateDocumentDto{
     verification_status: string;
     uploaded_at: Date;
 }
+
+export interface UploadCandidateDocuments{
+    document_type: string;
+    file_path: string;
+    candidate_id: string;
+}

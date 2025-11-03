@@ -8,5 +8,4 @@ export const Images = {
     candidateExcelFormatAdd,
     candidateExcelFormatUpdate,
     candidateExcelFormatDelete
-
 };

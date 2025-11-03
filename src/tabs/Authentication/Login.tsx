@@ -14,7 +14,8 @@ import {
 import { loginUser } from "@/api/Auth_api";
 import { getRoles } from "@/api/Roles_api";
 import type { RoleDto } from "@/interfaces/Roles_interface";
-import { useAuth, type UserRole } from "@/route_protection/AuthContext";
+import { useAuth, type User, type UserRole } from "@/route_protection/AuthContext";
+import { notify } from "@/components/custom/Notifications";
 
 /**
  * Login component for user authentication.
@@ -87,10 +88,10 @@ export default function Login() {
       const result = await loginUser({ email, password, role });
 
       // Prepare user data for the authentication context and local storage
-      const userdata = {
+      const userdata: User  = {
         isAuthenticated: true,
         token: result.token,
-        userId: result.user.id,
+        userId: result.user.userId,
         email: result.user.email,
         role: isUserRole(result.user.role) ? result.user.role : "Viewer", // Ensure the role is a valid UserRole
       };
@@ -99,11 +100,13 @@ export default function Login() {
 
       // Save user data to localStorage (consider sessionStorage for better security for tokens)
       localStorage.setItem("user", JSON.stringify(userdata));
+      notify.success("Login Success.")
 
       // Redirect to the company dashboard upon successful login
       navigate(`/company/dashboard`);
     } catch (error: any) {
       // Display error message if login fails
+      notify.error("Login faild.")
       setError(error?.message || "Login failed");
     }
   };
@@ -172,7 +175,7 @@ export default function Login() {
               <p>
                 Don&apos;t have an account?
                 <Link
-                  to="/auth/register"
+                  to="/register"
                   className="text-blue-600 hover:underline ml-1"
                 >
                   Register

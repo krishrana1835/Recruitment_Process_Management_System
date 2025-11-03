@@ -5,6 +5,8 @@ import { useAuth } from "@/route_protection/AuthContext";
 import { Card } from "../ui/card";
 import { Atom } from "react-loading-indicators";
 import { deleteCandidate } from "@/api/Candidate_api";
+import { notify } from "./Notifications";
+import { deleteJob } from "@/api/Job_api";
 
 /**
  * A component that handles the deletion of different types of data based on the URL parameters.
@@ -22,14 +24,14 @@ const DeleteHandler = () => {
    */
   useEffect(() => {
     if (!user) {
-      alert("No user logged in");
+      notify.error("Error","No user logged in");
       return;
     }
 
     if (!deleteapi || !deleteid) return;
 
     if (!user?.token) {
-      alert("Unauthorized");
+      notify.error("Error","Unauthorized");
       navigate("/login", { replace: true }); // Use replace to prevent back button from going to the delete page
       return;
     }
@@ -48,20 +50,24 @@ const DeleteHandler = () => {
           // Handle user deletion
           case "users-data":
             await deleteUser(deleteid, user.token);
-            alert("User deleted successfully");
+            notify.success("Success","User deleted successfully");
             break;
           // Handle candidate deletion
           case "candidates-data":
             await deleteCandidate(deleteid, user.token);
-            alert("Candidate deleted successfully");
+            notify.success("Success","Candidate deleted successfully");
             break;
           // Handle company deletion (currently commented out)
           case "company":
             // await deleteCompany(deleteid, user.token);
-            alert("Company deleted successfully");
+            notify.success("Success","Company deleted successfully");
+            break;
+          case "jobs-data":
+            await deleteJob(deleteid, user.token);
+            notify.success("Success","Job deleted successfully");
             break;
           default:
-            alert(`Unknown delete type: ${deleteapi}`);
+            notify.error("Error",`Unknown delete type: ${deleteapi}`);
             navigate("/", { replace: true });
             return;
         }
@@ -70,7 +76,7 @@ const DeleteHandler = () => {
         navigate(`/company/dashboard/${deleteapi.split("-")[0]}`, { replace: true });
 
       } catch (error: any) {
-        alert(`Failed to delete ${deleteapi}: ${error.message}`);
+        notify.error("Error",`Failed to delete ${deleteapi}: ${error.message}`);
         navigate("/", { replace: true });
       }
     };

@@ -15,10 +15,10 @@ export type UserRole =
 /**
  * Represents the structure of an authenticated user.
  */
-interface User {
+export interface User {
   isAuthenticated: boolean; // Indicates if the user is authenticated
   token: string; // Authentication token for API requests
-  userId: number; // Unique identifier for the user
+  userId: string; // Unique identifier for the user
   email: string; // User's email address
   role: UserRole; // The role of the user
 }

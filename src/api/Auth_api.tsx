@@ -29,6 +29,7 @@ export async function loginUser(data: UserLoginDto): Promise<LoginResponse> {
     throw new Error(errorText || "Login failed");
   }
 
+  const returndata = response.json();
   // If the request was successful, parse the JSON response and return it
-  return response.json();
+  return returndata;
 }

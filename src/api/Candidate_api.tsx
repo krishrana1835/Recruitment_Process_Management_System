@@ -4,8 +4,12 @@ import type {
   DeleteBulkCandidate,
   UpdateBulkCandidate,
   CandidateProfileDto,
+  RegisterCandidateDto,
+  UploadCandidateResumeDto,
+  ResetCandidatePasswordDto,
 } from "@/interfaces/Candidate_interface";
 import { sendMail } from "./Email_api";
+import type { CandidateDashboardProfileData } from "@/tabs/CompanyDashboard/Candidate/Profile";
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -76,6 +80,34 @@ export async function getCandidateProfile(
   }
 }
 
+export async function getCandidateDashProfile(
+  id: string,
+  token: string
+): Promise<CandidateDashboardProfileData> {
+  try {
+    const response = await fetch(
+      `${api_url}/Candidate/GetCandidateDashboardProfile/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Error fetching candidate profile");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Network error while fetching candidate profile");
+  }
+}
+
 /**
  * Fetches the ID of the last candidate created in the system.
  *
@@ -102,6 +134,35 @@ export async function getLastCandidateId(token: string): Promise<any> {
     return data.candidate_id;
   } catch (error) {
     throw new Error("Network error while fetching last candidate id");
+  }
+}
+
+export async function getCandidateResume(
+  candidate_id: string,
+  token: string
+): Promise<{ message: string; resume_path: string; success: boolean }> {
+  try {
+    const response = await fetch(
+      `${api_url}/Candidate/GetResume/${candidate_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Error fetching candidate resume");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    throw new Error("Network error while fetching candidate resume");
   }
 }
 
@@ -146,6 +207,147 @@ export async function createCandidate(
     return await response.json();
   } catch (error: any) {
     throw new Error(error?.message || "Network error while creating candidate");
+  }
+}
+
+/**
+ * Registers a new candidate in the system.
+ *
+ * @param {CreateCandidateDto} newCandidate - The candidate data to create.
+ * @param {string} token - The authorization token for the API request.
+ * @returns {Promise<any>} A promise that resolves to the created candidate data.
+ * @throws {Error} Throws an error if the API request fails or if the response is not successful.
+ */
+export async function registerCandidate(
+  newCandidate: RegisterCandidateDto
+): Promise<any> {
+  try {
+    const response = await fetch(`${api_url}/Candidate/Register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newCandidate),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Registration failed");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error registering candidate:", error);
+    throw new Error(
+      error?.message || "Network error while registering candidate"
+    );
+  }
+}
+
+export async function uploadResumeCandidate(
+  payload: UploadCandidateResumeDto,
+  token: string
+): Promise<{ message: string; url: string }> {
+  try {
+    const response = await fetch(`${api_url}/Candidate/UploadResume`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "updating candidate resume path failed");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error updating candidate resume path:", error);
+    throw new Error(
+      error?.message || "Network error while updating candidate resume path"
+    );
+  }
+}
+
+export async function resetCandidatePassword(
+  payload: ResetCandidatePasswordDto,
+  token: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await fetch(`${api_url}/Candidate/ResetPassword`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "updating candidate password failed");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error updating candidate password:", error);
+    throw new Error(
+      error?.message || "Network error while updating candidate password"
+    );
+  }
+}
+
+export async function UpdateCandidateDashProfile(
+  payload: CandidateDashboardProfileData,
+  email: string,
+  token: string
+): Promise<CandidateDashboardProfileData> {
+  try {
+    const response = await fetch(
+      `${api_url}/Candidate/UpdateCandidateDashboardProfile`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "updating candidate profile failed");
+    }
+
+    try {
+      await sendMail(
+        email,
+        "Roima Candidaet Profile Updated",
+        `
+        <p>Your profile has been updated. This is the updated information:</p>
+        <p>
+          <b>Name:</b> ${payload.full_name}<br>
+          <b>Phone:</b> ${payload.phone}<br>
+          <b>Email:</b> ${payload.email}
+        </p>
+      `,
+        token
+      );
+    } catch (error: any) {
+      console.error("Error sending email:", error.message);
+      throw new Error("Error sending updation mail");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error updating candidate profile", error);
+    throw new Error(
+      error?.message || "Network error while updating candidate profile"
+    );
   }
 }
 

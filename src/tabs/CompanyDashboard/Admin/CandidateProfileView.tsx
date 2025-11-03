@@ -29,7 +29,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const CandidateProfileView = ({ allowUpdate }: { allowUpdate: boolean }) => {
+const document_url = import.meta.env.VITE_DOCUMENT_URL;
+
+type TabOption =
+  | "Candidate Documents"
+  | "Reviews"
+  | "Skills"
+  | "Interview"
+  | "Status History";
+
+interface Props {
+  allowUpdate: boolean;
+  tabs: TabOption[];
+}
+
+const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
   const { id } = useParams<{ id: string }>();
   const [candidateData, setCandidateData] =
     useState<CandidateProfileDto | null>(null);
@@ -184,30 +198,36 @@ const CandidateProfileView = ({ allowUpdate }: { allowUpdate: boolean }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Resume
                 </label>
-                <a
-                  href={candidateData?.resume_path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className:
-                      "bg-gray-500 text-white hover:bg-black hover:text-white duration-300",
-                  })}
-                >
-                  View Resume
-                </a>
-                <a
-                  href={candidateData?.resume_path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className:
-                      "bg-red-400 text-white hover:bg-red-500 hover:text-white duration-300",
-                  })}
-                >
-                  Update Resume
-                </a>
+                {candidateData?.resume_path !== "not provided" ? (
+                  <a
+                    href={document_url + candidateData?.resume_path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonVariants({
+                      variant: "outline",
+                      className:
+                        "bg-gray-500 text-white hover:bg-black hover:text-white duration-300",
+                    })}
+                  >
+                    View Resume
+                  </a>
+                ) : (
+                  <div className="text-sm text-gray-500">Not Uploaded</div>
+                )}
+                {allowUpdate && (
+                  <a
+                    href={"http://localhost:5146" + candidateData?.resume_path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonVariants({
+                      variant: "outline",
+                      className:
+                        "bg-red-400 text-white hover:bg-red-500 hover:text-white duration-300",
+                    })}
+                  >
+                    Update Resume
+                  </a>
+                )}
               </div>
 
               <div className="md:col-span-2">
@@ -218,7 +238,11 @@ const CandidateProfileView = ({ allowUpdate }: { allowUpdate: boolean }) => {
                   Status
                 </label>
                 <Select
-                  value={candidateData?.candidate_Status_Histories?.length ? latestStatus : ""}
+                  value={
+                    candidateData?.candidate_Status_Histories?.length
+                      ? latestStatus
+                      : ""
+                  }
                   onValueChange={(value) => {
                     console.log("New Status:", value);
                   }}
@@ -256,51 +280,65 @@ const CandidateProfileView = ({ allowUpdate }: { allowUpdate: boolean }) => {
           <>
             <div className="mb-8">
               <nav className="flex space-x-2">
-                <button
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                    tab === "Candidate Documents" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => setTab("Candidate Documents")}
-                >
-                  <IoDocumentsOutline className="size-5 mr-2" />
-                  Documents
-                </button>
-                <button
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                    tab === "Reviews" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => setTab("Reviews")}
-                >
-                  <MdOutlineRateReview className="size-5 mr-2" />
-                  Reviews
-                </button>
-                <button
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                    tab === "Skills" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => setTab("Skills")}
-                >
-                  <GiSkills className="size-5 mr-2" />
-                  Skills
-                </button>
-                <button
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                    tab === "Interview" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => setTab("Interview")}
-                >
-                  <RiCalendarScheduleLine className="size-5 mr-2" />
-                  Interview
-                </button>
-                <button
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                    tab === "Status History" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => setTab("Status History")}
-                >
-                  <GoHistory className="size-5 mr-2" />
-                  Status History
-                </button>
+                {tabs.includes("Candidate Documents") && (
+                  <button
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
+                      tab === "Candidate Documents" ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => setTab("Candidate Documents")}
+                  >
+                    <IoDocumentsOutline className="size-5 mr-2" />
+                    Documents
+                  </button>
+                )}
+
+                {tabs.includes("Reviews") && (
+                  <button
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
+                      tab === "Reviews" ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => setTab("Reviews")}
+                  >
+                    <MdOutlineRateReview className="size-5 mr-2" />
+                    Reviews
+                  </button>
+                )}
+
+                {tabs.includes("Skills") && (
+                  <button
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
+                      tab === "Skills" ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => setTab("Skills")}
+                  >
+                    <GiSkills className="size-5 mr-2" />
+                    Skills
+                  </button>
+                )}
+
+                {tabs.includes("Interview") && (
+                  <button
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
+                      tab === "Interview" ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => setTab("Interview")}
+                  >
+                    <RiCalendarScheduleLine className="size-5 mr-2" />
+                    Interview
+                  </button>
+                )}
+
+                {tabs.includes("Status History") && (
+                  <button
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
+                      tab === "Status History" ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => setTab("Status History")}
+                  >
+                    <GoHistory className="size-5 mr-2" />
+                    Status History
+                  </button>
+                )}
               </nav>
             </div>
 

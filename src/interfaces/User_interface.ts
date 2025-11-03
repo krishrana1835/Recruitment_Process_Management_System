@@ -38,3 +38,14 @@ export interface UserProfileDto extends UserDto{
     candidate_reviews: [Candidate_ReviewDto]; // Array of candidate reviews associated with the user
     jobs_created: [JobDto]; // Array of jobs created by the user
 }
+
+export interface ResetUserPasswordDto {
+    user_id: string; // Unique identifier for the user
+    password: string; // New password for the user
+}
+
+export interface UserDashboardProfileData{
+    user_id: string;
+    name: string;
+    email: string;
+}

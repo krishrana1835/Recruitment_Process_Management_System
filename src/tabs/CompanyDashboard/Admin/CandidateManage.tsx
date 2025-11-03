@@ -34,7 +34,6 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { toast } from "sonner";
 import { excelToJson } from "@/components/custom/exceltojson";
 import { useAuth } from "@/route_protection/AuthContext";
 import { generateRandomPassword } from "@/components/custom/PasswordGenerator";
@@ -48,6 +47,7 @@ import {
 import { Images } from "@/constants/Images";
 import { Card } from "@/components/ui/card";
 import { Atom } from "react-loading-indicators";
+import { notify } from "@/components/custom/Notifications";
 
 function transformBulkToCreate(
   bulkData: CreateBulkCandidate[],
@@ -87,9 +87,7 @@ export default function CandidateManage() {
     setShowPopup(false);
 
     if (!excelFile) {
-      toast("No file selected", {
-        description: "Please select an Excel file.",
-      });
+      notify.warning("No file selected", "Please select an Excel file.");
       setLoading(false);
       return;
     }
@@ -128,13 +126,13 @@ export default function CandidateManage() {
         setUninsertedEmails(response);
         setPopupMessage("inserted");
       } else {
-        alert("Candidates are added");
+        notify.success("Success", "Candidates are added");
       }
 
       setExcelFile(null);
     } catch (err: any) {
       console.error(err);
-      toast("Error", { description: err.message || "Something went wrong." });
+      notify.error("Error", err.message || "Something went wrong.");
       setError(err.message || "Unknown error");
     } finally {
       setLoading(false);
@@ -147,9 +145,7 @@ export default function CandidateManage() {
     setShowPopup(false);
 
     if (!excelFile) {
-      toast("No file selected", {
-        description: "Please select an Excel file.",
-      });
+      notify.warning("No file selected", "Please select an Excel file.");
       setLoading(false);
       return;
     }
@@ -177,13 +173,13 @@ export default function CandidateManage() {
         setUninsertedEmails(response);
         setPopupMessage("updated");
       } else {
-        alert("Candidates are updated");
+        notify.success("Success", "Candidates are updated");
       }
 
       setExcelFile(null);
     } catch (err: any) {
       console.error(err);
-      toast("Error", { description: err.message || "Something went wrong." });
+      notify.error("Error", err.message || "Something went wrong.");
       setError(err.message || "Unknown error");
     } finally {
       setLoading(false);
@@ -195,7 +191,7 @@ export default function CandidateManage() {
     setLoading(true);
     setShowPopup(false);
     if (!excelFile) {
-      toast("No file selected", { description: "Please select an Excel file." });
+      notify.warning("No file selected", "Please select an Excel file.");
       setLoading(false);
       return;
     }
@@ -206,7 +202,6 @@ export default function CandidateManage() {
     }
     try {
       const formData: DeleteBulkCandidate[] = await excelToJson(excelFile);
-      // You might need a transform function here as well depending on the API expectations
       const response = await candidateBulkDelete(formData, user.token);
 
       if (
@@ -217,12 +212,12 @@ export default function CandidateManage() {
         setUninsertedEmails(response);
         setPopupMessage("deleted");
       } else {
-        alert("Candidates are updated");
+        notify.success("Success", "Candidates are updated");
       }
       setExcelFile(null);
     } catch (err: any) {
       console.error(err);
-      toast("Error", { description: err.message || "Something went wrong." });
+      notify.error("Error", err.message || "Something went wrong.");
       setError(err.message || "Unknown error");
     } finally {
       setLoading(false);
@@ -248,124 +243,145 @@ export default function CandidateManage() {
   return (
     <div className="h-full w-full">
       <Menubar className="gap-8 mb-6 flex justify-center items-center">
-  {/* Add Candidate */}
-  <MenubarMenu>
-    <MenubarTrigger>Add Candidate</MenubarTrigger>
-    <MenubarContent>
-      <MenubarItem onClick={() => navigate("/company/dashboard/candidates/add")}>
-        Use dashboard
-      </MenubarItem>
-      <Popover>
-        <PopoverTrigger asChild>
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
-            Import Excel
-          </MenubarItem>
-        </PopoverTrigger>
-        <PopoverContent
-          className="flex flex-col gap-3 p-4 mt-4 w-72"
-          onFocusOutside={(e) => e.preventDefault()}
-        >
-          <Input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-          />
-          <button
-            className="bg-primary text-white px-4 py-2 rounded text-sm"
-            onClick={() => handleExcelUploadAdd()}
-            disabled={loading}
-          >
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-        </PopoverContent>
-      </Popover>
-    </MenubarContent>
-  </MenubarMenu>
+        {/* Add Candidate */}
+        <MenubarMenu>
+          <MenubarTrigger>Add Candidate</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem
+              onClick={() => navigate("/company/dashboard/candidates/add")}
+            >
+              Use dashboard
+            </MenubarItem>
+            <MenubarItem
+              onClick={() =>
+                navigate("/company/dashboard/candidates/add/resume")
+              }
+            >
+              Import Resume
+            </MenubarItem>
+            <Popover>
+              <PopoverTrigger asChild>
+                <MenubarItem onSelect={(e) => e.preventDefault()}>
+                  Import Excel
+                </MenubarItem>
+              </PopoverTrigger>
+              <PopoverContent
+                className="flex flex-col gap-3 p-4 mt-4 w-72"
+                onFocusOutside={(e) => e.preventDefault()}
+              >
+                <Input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileChange}
+                />
+                <button
+                  className="bg-primary text-white px-4 py-2 rounded text-sm"
+                  onClick={() => handleExcelUploadAdd()}
+                  disabled={loading}
+                >
+                  {loading ? "Uploading..." : "Upload"}
+                </button>
+              </PopoverContent>
+            </Popover>
+          </MenubarContent>
+        </MenubarMenu>
 
-  {/* Update Candidate */}
-  <MenubarMenu>
-    <MenubarTrigger>Update Candidate</MenubarTrigger>
-    <MenubarContent>
-      <Popover>
-        <PopoverTrigger asChild>
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
-            Import Excel
-          </MenubarItem>
-        </PopoverTrigger>
-        <PopoverContent
-          className="flex flex-col gap-3 p-4 mt-4 w-72"
-          onFocusOutside={(e) => e.preventDefault()}
-        >
-          <Input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-          />
-          <button
-            className="bg-primary text-white px-4 py-2 rounded text-sm"
-            onClick={() => handleExcelUploadUpdate()}
-            disabled={loading}
-          >
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-        </PopoverContent>
-      </Popover>
-    </MenubarContent>
-  </MenubarMenu>
+        {/* Update Candidate */}
+        <MenubarMenu>
+          <MenubarTrigger>Update Candidate</MenubarTrigger>
+          <MenubarContent>
+            <Popover>
+              <PopoverTrigger asChild>
+                <MenubarItem onSelect={(e) => e.preventDefault()}>
+                  Import Excel
+                </MenubarItem>
+              </PopoverTrigger>
+              <PopoverContent
+                className="flex flex-col gap-3 p-4 mt-4 w-72"
+                onFocusOutside={(e) => e.preventDefault()}
+              >
+                <Input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileChange}
+                />
+                <button
+                  className="bg-primary text-white px-4 py-2 rounded text-sm"
+                  onClick={() => handleExcelUploadUpdate()}
+                  disabled={loading}
+                >
+                  {loading ? "Uploading..." : "Upload"}
+                </button>
+              </PopoverContent>
+            </Popover>
+          </MenubarContent>
+        </MenubarMenu>
 
-  {/* Delete Candidate */}
-  <MenubarMenu>
-    <MenubarTrigger>Delete Candidate</MenubarTrigger>
-    <MenubarContent>
-      <Popover>
-        <PopoverTrigger asChild>
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
-            Import Excel
-          </MenubarItem>
-        </PopoverTrigger>
-        <PopoverContent
-          className="flex flex-col gap-3 p-4 mt-4 w-72"
-          onFocusOutside={(e) => e.preventDefault()}
-        >
-          <Input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-          />
-          <button
-            className="bg-destructive text-white px-4 py-2 rounded text-sm"
-            onClick={() => handleExcelUploadDelete()}
-            disabled={loading}
-          >
-            {loading ? "Deleting..." : "Upload"}
-          </button>
-        </PopoverContent>
-      </Popover>
-    </MenubarContent>
-  </MenubarMenu>
+        {/* Delete Candidate */}
+        <MenubarMenu>
+          <MenubarTrigger>Delete Candidate</MenubarTrigger>
+          <MenubarContent>
+            <Popover>
+              <PopoverTrigger asChild>
+                <MenubarItem onSelect={(e) => e.preventDefault()}>
+                  Import Excel
+                </MenubarItem>
+              </PopoverTrigger>
+              <PopoverContent
+                className="flex flex-col gap-3 p-4 mt-4 w-72"
+                onFocusOutside={(e) => e.preventDefault()}
+              >
+                <Input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileChange}
+                />
+                <button
+                  className="bg-destructive text-white px-4 py-2 rounded text-sm"
+                  onClick={() => handleExcelUploadDelete()}
+                  disabled={loading}
+                >
+                  {loading ? "Deleting..." : "Upload"}
+                </button>
+              </PopoverContent>
+            </Popover>
+          </MenubarContent>
+        </MenubarMenu>
 
-  {/* Tooltip with all three formats */}
-  <Tooltip>
-    <TooltipTrigger className="cursor-pointer">
-      <MdInfoOutline className="text-2xl" />
-    </TooltipTrigger>
-    <TooltipContent className="bg-white text-black border-2 shadow-lg p-4 space-y-6 max-w-3xl m-4 mt-0">
-      <div>
-        <h4 className="font-semibold mb-2">Add Candidate Excel Format</h4>
-        <img src={Images.candidateExcelFormatAdd} alt="Add Candidate Excel Format" />
-      </div>
-      <div>
-        <h4 className="font-semibold mb-2">Update Candidate Excel Format</h4>
-        <img src={Images.candidateExcelFormatUpdate} alt="Update Candidate Excel Format" />
-      </div>
-      <div>
-        <h4 className="font-semibold mb-2">Delete Candidate Excel Format</h4>
-        <img src={Images.candidateExcelFormatDelete} alt="Delete Candidate Excel Format" />
-      </div>
-    </TooltipContent>
-  </Tooltip>
-</Menubar>
-
+        {/* Tooltip with all three formats */}
+        <Tooltip>
+          <TooltipTrigger className="cursor-pointer">
+            <MdInfoOutline className="text-2xl" />
+          </TooltipTrigger>
+          <TooltipContent className="bg-white text-black border-2 shadow-lg p-4 space-y-6 max-w-3xl m-4 mt-0">
+            <div>
+              <h4 className="font-semibold mb-2">Add Candidate Excel Format</h4>
+              <img
+                src={Images.candidateExcelFormatAdd}
+                alt="Add Candidate Excel Format"
+              />
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">
+                Update Candidate Excel Format
+              </h4>
+              <img
+                src={Images.candidateExcelFormatUpdate}
+                alt="Update Candidate Excel Format"
+              />
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">
+                Delete Candidate Excel Format
+              </h4>
+              <img
+                src={Images.candidateExcelFormatDelete}
+                alt="Delete Candidate Excel Format"
+              />
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </Menubar>
 
       {showpopup && (
         <div
@@ -381,7 +397,7 @@ export default function CandidateManage() {
             zIndex: 1000,
             width: "400px",
           }}
-        > 
+        >
           <h3>⚠️ Some Candidates Were Not {popupMessage}</h3>
           <p>The following emails were not {popupMessage}:</p>
           <ul>
@@ -392,7 +408,7 @@ export default function CandidateManage() {
           <button
             onClick={() => {
               navigator.clipboard.writeText(uninsertedEmails.join(", "));
-              alert("Emails copied to clipboard.");
+              notify.success("Copied", "Emails copied to clipboard.");
             }}
             style={{ marginTop: "10px", marginRight: "10px" }}
           >

@@ -20,6 +20,7 @@ import {
   jobColumns,
 } from "@/components/custom/columns";
 import type { UserUpdateDto } from "@/interfaces/User_interface";
+import { notify } from "@/components/custom/Notifications";
 
 /**
  * UserProfile component displays and optionally allows updating a user's profile information.
@@ -102,9 +103,9 @@ const UserProfile = ({ allowUpdate }: { allowUpdate: boolean }) => {
       };
       // Call the API to update the user with selected roles
       await updateUser(updatedUser, selectedRoles, user.token);
-      alert("User updated successfully."); // Show success message
+      notify.success("Success", "User updated successfully");
     } catch (err: any) {
-      alert("Failed to update user."); // Show error message
+      notify.error("Error","Failed to update user."); // Show error message
       console.error(err); // Log the error
     } finally {
       setLoading(false); // Set loading to false

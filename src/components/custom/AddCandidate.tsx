@@ -7,11 +7,8 @@ import { useAuth } from "@/route_protection/AuthContext";
 import { createCandidate, getLastCandidateId } from "@/api/Candidate_api";
 import { generateRandomPassword } from "./PasswordGenerator";
 import type { CreateCandidateDto } from "@/interfaces/Candidate_interface";
-// NOTE: You will need to create these API functions and interfaces
-// import { createCandidate, getLastCandidateId } from "@/api/Candidate_api";
-
-// --- MOCK API FUNCTIONS (for demonstration) ---
-// Replace these with your actual API calls.
+import { uploadResume } from "@/api/UploadFiles_api";
+import { notify } from "./Notifications";
 
 /**
  * @interface LastId
@@ -127,9 +124,11 @@ const AddCandidate = () => {
 
   setLoading(true);
 
+
+
   try {
     // 1. Upload resume via API wrapper
-    // const resume_path = await uploadResume(resumeFile, user.token);
+    const resume_path = await uploadResume(resumeFile, user.token);
 
     // 2. Construct CreateCandidateDto
     const newCandidate: CreateCandidateDto = {
@@ -137,14 +136,14 @@ const AddCandidate = () => {
       full_name: candidateData.full_name,
       email: candidateData.email,
       phone: candidateData.phone,
-      resume_path: resumeFile.name,
+      resume_path: resume_path.url || "",
       password: generateRandomPassword(),
     };
 
     // 3. Call your API wrapper
-    await createCandidate(newCandidate, user.token);
+    await createCandidate(newCandidate,user.token);
 
-    alert("Candidate created successfully!");
+    notify.success("Success","Candidate created successfully!");
     // Reset form if needed
   } catch (error: any) {
     setError(error.message || "An unknown error occurred.");

@@ -10,6 +10,16 @@ export interface CandidateDto {
   email: string;
 }
 
+export interface UploadCandidateResumeDto {
+  candidate_id: string;
+  resume_path: string;
+}
+
+export interface ResetCandidatePasswordDto {
+  candidate_id: string;
+  password: string;
+}
+
 export interface CandidateListDto extends CandidateDto {
   phone: string;
   created_at: Date;
@@ -18,6 +28,11 @@ export interface CandidateListDto extends CandidateDto {
 export interface CreateCandidateDto extends CandidateDto {
   phone: string;
   resume_path: string;
+  password: string;
+}
+
+export interface RegisterCandidateDto extends CandidateDto {
+  phone: string;
   password: string;
 }
 

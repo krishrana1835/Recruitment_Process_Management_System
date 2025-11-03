@@ -18,20 +18,48 @@ interface menu{
 // Menu items specific to Admin role
 const AdminItems = [
 	{ name: "User Management", path: "users" },
-	{ name: "Job Management", path: "/dashboard/employees" },
+	{ name: "Job Management", path: "jobs" },
 	{ name: "Candidate Management", path: "candidates" },
-	{ name: "Resume Review & Sortlisting", path: "/dashboard/assign-roles" },
+	{ name: "Resume Review & Sortlisting", path: "view-open-jobs" },
 	{ name: "Interview Scheduling", path: "/dashboard/interview-schedule" },
 	{ name: "Feedback & Evaluation", path: "/dashboard/feedback" },
 	{ name: "Reports & Analytics", path: "/dashboard/reports" },
 	{ name: "Notifications", path: "/dashboard/notifications" },
-	{ name: "Settings", path: "/dashboard/settings" },
+	{name: "Profile", path: "userprofile"},
+	{name: "Settings", path: "resetpassword"},
 ];
 
-// Menu items specific to HR role
-const HRItems = [
-    {name: "Candidate Profiles", path: "/dashboard/candidate"}
-]
+// Menu items specific to Candidate role
+const CandidateItems = [
+	{name: "Job Openings" , path: "openjobs"},
+	{name: "My Applications", path: "myapplications"},
+	{name: "Interview Schedule", path: "interviewschedule"},
+	{name: "Upload Resume", path: "uploadresume"},
+	{name: "Upload Documents", path: "documents"},
+	{name: "Profile", path: "profile"},
+	{name: "Settings", path: "settings"},
+];
+
+// Menu items specific to Reviewer role
+const Reviewertems = [
+	{name: "Job Openings" , path: "view-open-jobs"},
+	{name: "Profile", path: "userprofile"},
+	{name: "Settings", path: "resetpassword"},
+];
+
+// Menu items specific to Reviewer role
+const RecruiterItems = [
+	{ name: "Job Management", path: "jobs" },
+	{ name: "Candidate Management", path: "candidates" },
+	{ name: "Shedule Interview", path: "candidates" },
+	{name: "Profile", path: "userprofile"},
+	{name: "Settings", path: "resetpassword"},
+];
+
+// // Menu items specific to HR role
+// const HRItems = [
+//     {name: "Candidate Profiles", path: "/dashboard/candidate"}
+// ]
 
 /**
  * Dashboard component that provides a layout with a sidebar and a main content area.
@@ -53,11 +81,21 @@ export default function Dashboard() {
     // Effect hook to load menu items based on user role when the component mounts or user changes
     useEffect(()=>{
 		if(!user) return; // If no user is logged in, do nothing
-        if(user.role == 'Admin'){
-            setLoadMenu(AdminItems) // Load Admin specific menu items
-        }else{
-            setLoadMenu(HRItems) // Load HR specific menu items
-        }
+		switch(user.role){
+			case "Admin":
+				setLoadMenu(AdminItems);
+				break;
+			case "Candidate":
+				setLoadMenu(CandidateItems);
+				break;
+			case "Reviewer":
+				setLoadMenu(Reviewertems);
+				break;
+			case "Recruiter":
+				setLoadMenu(RecruiterItems);
+				break;
+			default:
+		}
         setPanelName(user.role) // Set the panel name to the user's role
     },[user]) // Dependency array includes user to re-run when user data changes
 
