@@ -140,12 +140,12 @@ const AddJob = ({ action }: Action) => {
       const jobSkillsPayload = [
         ...requiredSkills.map((s) => ({
           job_id: 0, // backend will set this after job is created
-          skill_ids: s.skill_id,
+          skill_id: s.skill_id,
           skill_type: "Required",
         })),
         ...preferredSkills.map((s) => ({
           job_id: 0,
-          skill_ids: s.skill_id,
+          skill_id: s.skill_id,
           skill_type: "Preferred",
         })),
       ];

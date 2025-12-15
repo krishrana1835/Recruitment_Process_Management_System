@@ -1,5 +1,6 @@
 // Import the RoleDto interface from the Roles_interface file
 import type { SkillDto } from "@/interfaces/Skill_interrface";
+import { apiRequest } from "./apiRequest";
 
 // Get the API URL from environment variables
 const api_url = import.meta.env.VITE_API_URL
@@ -119,4 +120,35 @@ export async function assignSkillsToCandidateInRegistration(
     console.error("Error assigning skills:", error);
     throw new Error("Network error while assigning skills");
   }
+}
+
+
+/**
+ * Add new Skill into database
+ * @param data - add skill to add
+ * @param token - Bearer token for authontication
+ * @returns - Array of Skills with it's Id
+ */
+export function addSkillApi(data: string, token: string) {
+  return apiRequest<SkillDto[]>(`/Skill/AddSkill/${data}`, "GET", token);
+}
+
+/**
+ * Update Skill in database
+ * @param data - {skill_id, skill_name}
+ * @param token - Bearer token for authontication
+ * @returns - Updated Skill with it's Id
+ */
+export function updateSkillApi(data: SkillDto, token: string) {
+  return apiRequest<SkillDto>(`/Skill/UpdateSkill`, "POST", token, data);
+}
+
+/**
+ * Delete Skill in database
+ * @param data - Skill Id
+ * @param token - Bearer token for authontication
+ * @returns - Updated Skill with it's Id
+ */
+export function deleteSkillApi(data: number, token: string) {
+  return apiRequest<SkillDto>(`/Skill/DeleteSkill/${data}`, "DELETE", token);
 }

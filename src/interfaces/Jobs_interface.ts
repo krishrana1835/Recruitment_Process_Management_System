@@ -22,6 +22,7 @@ export interface ListAllJobsDto{
     created_at: Date; // Date and time when the job was created
     status_id: number; // Foreign key for the job's status
     status: ListAllJobs_Status; // Name of the job status
+    scheduled: string;
 }
 
 export interface CreateNewJobDto {
@@ -39,7 +40,7 @@ export interface CreateNewJobDto {
 
 export interface JobSkillDto {
   job_id: number;       
-  skill_ids: number; 
+  skill_id: number; 
   skill_type: string; 
 }
 

@@ -85,7 +85,7 @@ export function CandidateApplications() {
                 {jobApps.map((app) => (
                   <div
                     key={app.candidate_status_id}
-                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-2 last:border-b-0"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-2 last:border-b-0 pt-2"
                   >
                     <div className="flex flex-col gap-1 w-full sm:w-auto">
                       <p className="text-sm text-gray-600">

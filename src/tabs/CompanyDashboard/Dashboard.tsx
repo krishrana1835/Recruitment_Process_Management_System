@@ -21,8 +21,8 @@ const AdminItems = [
 	{ name: "Job Management", path: "jobs" },
 	{ name: "Candidate Management", path: "candidates" },
 	{ name: "Resume Review & Sortlisting", path: "view-open-jobs" },
-	{ name: "Interview Scheduling", path: "/dashboard/interview-schedule" },
-	{ name: "Feedback & Evaluation", path: "/dashboard/feedback" },
+	{ name: "Shedule Interview", path: "job-scheduled-status" },
+	// { name: "Feedback & Evaluation", path: "/dashboard/feedback" },
 	{ name: "Reports & Analytics", path: "/dashboard/reports" },
 	{ name: "Notifications", path: "/dashboard/notifications" },
 	{name: "Profile", path: "userprofile"},
@@ -33,7 +33,7 @@ const AdminItems = [
 const CandidateItems = [
 	{name: "Job Openings" , path: "openjobs"},
 	{name: "My Applications", path: "myapplications"},
-	{name: "Interview Schedule", path: "interviewschedule"},
+	{name: "Interview Schedule", path: "interview-schedule"},
 	{name: "Upload Resume", path: "uploadresume"},
 	{name: "Upload Documents", path: "documents"},
 	{name: "Profile", path: "profile"},
@@ -41,8 +41,16 @@ const CandidateItems = [
 ];
 
 // Menu items specific to Reviewer role
-const Reviewertems = [
+const ReviewerItems = [
 	{name: "Job Openings" , path: "view-open-jobs"},
+	{name: "Profile", path: "userprofile"},
+	{name: "Settings", path: "resetpassword"},
+];
+
+// Menu items specific to Reviewer role
+const InterviewerItems = [
+	{name: "Interview Schedules", path: "job-scheduled-status" },
+	{ name: "Skills Manager", path: "skills-manager" },
 	{name: "Profile", path: "userprofile"},
 	{name: "Settings", path: "resetpassword"},
 ];
@@ -51,15 +59,18 @@ const Reviewertems = [
 const RecruiterItems = [
 	{ name: "Job Management", path: "jobs" },
 	{ name: "Candidate Management", path: "candidates" },
-	{ name: "Shedule Interview", path: "candidates" },
+	{ name: "Shedule Interview", path: "job-scheduled-status" },
+	{ name: "Skills Manager", path: "skills-manager" },
 	{name: "Profile", path: "userprofile"},
 	{name: "Settings", path: "resetpassword"},
 ];
 
-// // Menu items specific to HR role
-// const HRItems = [
-//     {name: "Candidate Profiles", path: "/dashboard/candidate"}
-// ]
+// Menu items specific to HR role
+const HRItems = [
+	{name: "Interview Schedules", path: "job-scheduled-status" },
+    {name: "Profile", path: "userprofile"},
+	{name: "Settings", path: "resetpassword"},
+]
 
 /**
  * Dashboard component that provides a layout with a sidebar and a main content area.
@@ -89,10 +100,16 @@ export default function Dashboard() {
 				setLoadMenu(CandidateItems);
 				break;
 			case "Reviewer":
-				setLoadMenu(Reviewertems);
+				setLoadMenu(ReviewerItems);
 				break;
 			case "Recruiter":
 				setLoadMenu(RecruiterItems);
+				break;
+			case "Interviewer":
+				setLoadMenu(InterviewerItems);
+				break;
+			case "HR":
+				setLoadMenu(HRItems);
 				break;
 			default:
 		}

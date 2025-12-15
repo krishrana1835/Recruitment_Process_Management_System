@@ -1,6 +1,7 @@
 import type { CandidateListDto } from "@/interfaces/Candidate_interface";
 import { type ApplyForJobByCandidateDto, type ChangeCandidateStatusDto, type ListJobApplicationStatus } from "@/interfaces/Candidate_Status_History_interface";
 import { sendStatusEmail } from "./Email_api";
+import { apiRequest } from "./apiRequest";
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -162,4 +163,8 @@ export async function updateCandidateStatus(
     console.log(error)
     throw new Error(error.message || "Error updating job status");
   }
+}
+
+export function fetchAppliedJobs(data: string , token: string) {
+  return apiRequest<any[]>(`/Candidate_Status_History/GetAppliedJobs/${data}`, "GET", token);
 }

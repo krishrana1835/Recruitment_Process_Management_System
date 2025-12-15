@@ -11,6 +11,7 @@ import type {
   UserUpdateDto,
 } from "@/interfaces/User_interface";
 import { sendMail } from "@/api/Email_api";
+import { apiRequest } from "./apiRequest";
 
 // Get the API URL from environment variables
 const api_url = import.meta.env.VITE_API_URL;
@@ -419,4 +420,8 @@ export async function UpdateUserDashProfile(
       error?.message || "Network error while updating user profile"
     );
   }
+}
+
+export function getAllInterviewers(token: string) {
+  return apiRequest<any>("/Users/GetInterviewers", "GET", token);
 }
