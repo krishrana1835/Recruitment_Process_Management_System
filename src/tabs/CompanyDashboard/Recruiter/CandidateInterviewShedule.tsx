@@ -266,7 +266,12 @@ const CandidateInterviewSchedule = ({
           <Card key={interview.interview_id}>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle>{interview.candidate.full_name} - <span className="text-gray-500">{interview.candidate.email}</span></CardTitle>
+                <CardTitle>
+                  {interview.candidate.full_name} -{" "}
+                  <span className="text-gray-500">
+                    {interview.candidate.email}
+                  </span>
+                </CardTitle>
                 <div className="flex items-center gap-2">
                   {user?.role === "Admin" || user?.role === "Recruiter" ? (
                     <Select
@@ -447,29 +452,42 @@ const CandidateInterviewSchedule = ({
                     Delete
                   </Button>
                 )}
+                {user?.role === "Interviewer" && (
+                  <Button
+                    className="cursor-pointer"
+                    onClick={() =>
+                      nevigate(
+                        "/company/dashboard/list-interview-round/candidates/skills/" +
+                          interview.interview_id
+                      )
+                    }
+                  >
+                    Show Candidate Info
+                  </Button>
+                )}
+                {user?.role === "HR" && (
+                  <Button
+                    className="cursor-pointer"
+                    onClick={() =>
+                      nevigate(
+                        "/company/dashboard/list-interview-round/candidates/review/" +
+                          interview.interview_id
+                      )
+                    }
+                  >
+                    Show Candidate Info
+                  </Button>
+                )}
                 {((allowDelete && user?.role === "Admin") ||
+                  user?.role === "HR" ||
                   user?.role === "Interviewer") && (
                   <Button
                     className="cursor-pointer"
-                    onClick={() => nevigate("/company/dashboard/list-interview-round/candidates/skills/"+interview.interview_id)}
-                  >
-                    Show Candidate Info
-                  </Button>
-                )}
-                {((allowDelete && user?.role === "Admin") ||
-                  user?.role === "HR") && (
-                  <Button
-                    className="cursor-pointer"
-                    onClick={() => nevigate("/company/dashboard/list-interview-round/candidates/review/"+interview.interview_id)}
-                  >
-                    Show Candidate Info
-                  </Button>
-                )}
-                {((allowDelete && user?.role === "Admin") ||
-                  user?.role === "HR" || user?.role === "Interviewer") && (
-                  <Button
-                    className="cursor-pointer"
-                    onClick={() => nevigate(`/company/dashboard/list-interview-round/candidates/rating-card/${interview.job_id}/${interview.round_number}/${interview.candidate.candidate_id}`)}
+                    onClick={() =>
+                      nevigate(
+                        `/company/dashboard/list-interview-round/candidates/rating-card/${interview.job_id}/${interview.round_number}/${interview.candidate.candidate_id}`
+                      )
+                    }
                   >
                     Show Score Card
                   </Button>

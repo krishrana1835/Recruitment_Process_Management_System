@@ -21,7 +21,7 @@ const AdminItems = [
 	{ name: "Job Management", path: "jobs" },
 	{ name: "Candidate Management", path: "candidates" },
 	{ name: "Resume Review & Sortlisting", path: "view-open-jobs" },
-	{ name: "Shedule Interview", path: "job-scheduled-status" },
+	{ name: "Interview Schedules", path: "job-scheduled-status" },
 	// { name: "Feedback & Evaluation", path: "/dashboard/feedback" },
 	{ name: "Reports & Analytics", path: "/dashboard/reports" },
 	{ name: "Notifications", path: "/dashboard/notifications" },
