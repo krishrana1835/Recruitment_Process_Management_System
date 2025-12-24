@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/route_protection/AuthContext";
 import { useEffect, useState } from "react";
 import { Atom } from "react-loading-indicators";
-import { useNavigate, useParams } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { DeleteRoundDto } from "@/interfaces/Interview_interface";
+import { Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export interface DeleteRound {
   job_id: number;
@@ -19,7 +20,7 @@ interface roundData {
   interview_round_name: string;
   process_descreption: string;
   name: string;
-  interview_date: string
+  interview_date: string;
 }
 
 export default function DeleteRound({ allowUpdate }: { allowUpdate: boolean }) {
@@ -63,7 +64,9 @@ export default function DeleteRound({ allowUpdate }: { allowUpdate: boolean }) {
       return;
     }
 
-    navigate(`/company/dashboard/list-interview-round/candidates/${job_id}/${round_number}`);
+    navigate(
+      `/company/dashboard/list-interview-round/candidates/${job_id}/${round_number}`
+    );
   };
 
   const handleDelete = async (round_number: number, round_name: string) => {
@@ -119,41 +122,63 @@ export default function DeleteRound({ allowUpdate }: { allowUpdate: boolean }) {
       <h2 className="text-lg font-semibold">Interview Rounds</h2>
 
       {rounds?.roundData.length ? (
-        rounds.roundData.map((round) => (
-          <Card
-            key={round.round_number}
-            className="p-4 flex justify-between items-start"
-          >
+        <div className="">
+          {rounds.roundData.map((round) => (
+            <Card
+              key={round.round_number}
+              className="p-4 flex justify-between items-start mb-4"
+            >
+              <div className="space-y-1">
+                <p className="font-medium">
+                  Round {round.round_number}: {round.interview_round_name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {round.process_descreption}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(round.interview_date).toLocaleDateString()}
+                </p>
+              </div>
+
+              {allowUpdate ? (
+                <Button
+                  variant="destructive"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    handleDelete(round.round_number, round.interview_round_name)
+                  }
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleShowCandidates(round.round_number)}
+                  className="cursor-pointer"
+                >
+                  Show Candidates
+                </Button>
+              )}
+            </Card>
+          ))}
+          <Card className="p-4 flex justify-between items-start">
             <div className="space-y-1">
-              <p className="font-medium">
-                Round {round.round_number}: {round.interview_round_name}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {round.process_descreption}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {new Date(round.interview_date).toLocaleDateString()}
+              <p className="font-medium">Score Cards</p>
+              <p className="text-sm text-muted-foreground flex flex-row gap-4 mt-4">
+                {rounds?.roundData.map((round, index) => (
+                  <Link
+                    key={index}
+                    to={`/company/dashboard/list-interview-round/scores/${job_id}/${round.round_number}`}
+                  >
+                    <Badge variant={"outline"} className="p-4">
+                      {round.round_number}
+                    </Badge>
+                  </Link>
+                ))}
               </p>
             </div>
-
-            {allowUpdate ? (
-              <Button
-                variant="destructive"
-                className="cursor-pointer"
-                onClick={() =>
-                  handleDelete(round.round_number, round.interview_round_name)
-                }
-              >
-                <Trash2 className="w-4 h-4 mr-1" />
-                Delete
-              </Button>
-            ) : (
-              <Button onClick={() => handleShowCandidates(round.round_number)} className="cursor-pointer">
-                Show Candidates
-              </Button>
-            )}
           </Card>
-        ))
+        </div>
       ) : (
         <p className="text-sm text-muted-foreground">
           No interview rounds found.

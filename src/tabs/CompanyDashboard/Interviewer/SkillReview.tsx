@@ -67,7 +67,7 @@ export interface InterviewSkillSubmission {
   interview_id: number;
   user_id: string;
   candidate_id: string;
-
+  total_score: number;
   required_skills: SkillWithReview[];
   preferred_skills: SkillWithReview[];
   extra_skills: SkillWithReview[];
@@ -197,6 +197,7 @@ export default function SkillReview() {
           Number(interviewId),
           user.token
         );
+        console.log(res)
         setInterviewHist(res);
       } catch (err: any) {
         notify.error("Error", err.message);
@@ -332,6 +333,7 @@ export default function SkillReview() {
       user_id: user?.userId,
       interview_id: Number(interviewId),
       candidate_id: candidateData.candidate_id,
+      total_score: totalRating,
       required_skills: requiredSkills,
       preferred_skills: preferredSkills,
       extra_skills: extraSkills,

@@ -177,6 +177,121 @@ export const userListColumns: ColumnDef<UsersList>[] = [
   },
 ];
 
+export const userListColumnsViewer: ColumnDef<UsersList>[] = [
+  {
+    accessorKey: "user_id",
+    header: "User ID",
+    cell: ({ row }) => (
+      <div className="font-medium text-muted-foreground">
+        {row.getValue("user_id")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown /> {/* Sorting icon */}
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown /> {/* Sorting icon */}
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "role",
+    header: ({ column }) => {
+      if (column.getCanSort()) {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Role
+            <ArrowUpDown /> {/* Sorting icon */}
+          </Button>
+        );
+      } else {
+        return "Role";
+      }
+    },
+    cell: ({ row }) => {
+      const roles: RoleDto[] = row.getValue("role");
+      return (
+        <div className="capitalize">
+          {roles.map((r) => r.role_name).join(", ")}{" "}
+          {/* Display role names separated by commas */}
+        </div>
+      );
+    },
+    enableColumnFilter: false,
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const user = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal /> {/* Three dots icon for more options */}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {/* Dropdown menu items for user actions */}
+            <DropdownMenuItem className="cursor-pointer">
+              <Link
+                to={`/company/dashboard/users/profile/view/${row.getValue(
+                  "user_id"
+                )}`}
+                className="flex flex-row"
+              >
+                <MdOutlinePreview className="size-5 mr-2" />
+                View User
+              </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(user.email)
+                notify.success("Copied", "Email copied.")
+              }}
+              className="cursor-pointer"
+            >
+              <MdContentCopy className="size-5" /> Copy Email ID
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
 /**
  * Column definitions for the interview feedback table.
  * @type {ColumnDef<Interview_FeedbackDto>[]} 
@@ -616,6 +731,102 @@ export const candidateListColumns: ColumnDef<CandidateListDto>[] = [
               >
                 <MdOutlineDelete className="size-5 mr-2" />
                 Delete Candidate
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(candidate.email)
+                notify.success("Cpoied", "Email copied.")
+              }}
+              className="cursor-pointer"
+            >
+              <MdContentCopy className="size-5" /> Copy Email
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const candidateListColumnsViewer: ColumnDef<CandidateListDto>[] = [
+  {
+    accessorKey: "candidate_id",
+    header: "Candidate ID",
+    cell: ({ row }) => (
+      <div className="font-medium text-muted-foreground">
+        {row.getValue("candidate_id")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "full_name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Full Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("full_name")}</div>,
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone Number",
+    cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("created_at"));
+      // Using a more detailed format, but you can revert to toLocaleDateString()
+      const formatted = date.toLocaleDateString("en-US", {
+        year: 'numeric', month: 'short', day: 'numeric'
+      });
+      return <div className="font-medium">{formatted}</div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const candidate = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              <Link
+                to={`/company/dashboard/candidates/profile/view/${candidate.candidate_id}`}
+                className="flex flex-row"
+              >
+                <MdOutlinePreview className="size-5 mr-2" />
+                View Candidate
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

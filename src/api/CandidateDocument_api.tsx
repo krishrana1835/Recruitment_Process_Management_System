@@ -1,4 +1,5 @@
 import type { CandidateDocumentDto, UploadCandidateDocuments } from "@/interfaces/Candidate_Documents_interface";
+import { apiRequest } from "./apiRequest";
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -51,4 +52,12 @@ export async function uploadCandidateDocuments(
   } catch (error: any) {
     throw new Error(error.message || "Network error while adding candidate document");
   }
+}
+
+export function GetUploadStatus(data: string, token: string) {
+  return apiRequest<boolean>(`/Candidate_Documents/GetUploadStatus/${data}`, "GET", token);
+}
+
+export function UpdateUploadStatus(data: {candidate_id: string, doc_upload: boolean}, token: string) {
+  return apiRequest<boolean>(`/Candidate_Documents/UpdateUploadStatus`, "POST", token, data);
 }

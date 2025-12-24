@@ -16,6 +16,7 @@ import { notify } from "@/components/custom/Notifications";
 import { useAuth } from "@/route_protection/AuthContext";
 import {
   getCandidateDocuments,
+  GetUploadStatus,
   uploadCandidateDocuments,
 } from "@/api/CandidateDocument_api";
 import type { CandidateDocumentDto } from "@/interfaces/Candidate_Documents_interface";
@@ -52,6 +53,7 @@ export default function UploadCandidateDocuments() {
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [allowUpload, setAllowUpload] = useState(false);
 
   // 🔹 Load existing candidate documents
   useEffect(() => {
@@ -86,7 +88,22 @@ export default function UploadCandidateDocuments() {
       }
     };
 
+    const UploadStatus = async () => {
+      if (!user?.token) {
+        notify.error("Login Faild", "Please login again");
+        return;
+      }
+
+      try {
+        const res = await GetUploadStatus(user.userId, user.token);
+        setAllowUpload(res);
+      } catch (err: any) {
+        notify.error("Error", err.message);
+      }
+    };
+
     loadDocuments();
+    UploadStatus();
   }, [user]);
 
   // 🔹 Handle file selection
@@ -132,7 +149,12 @@ export default function UploadCandidateDocuments() {
       }
 
       // 🔸 Upload file to backend
-      const uploadRes = await uploadDocument(file, user.userId, type, user.token);
+      const uploadRes = await uploadDocument(
+        file,
+        user.userId,
+        type,
+        user.token
+      );
       const fileUrl = uploadRes.url;
 
       // 🔸 Update candidate document record in database
@@ -162,10 +184,7 @@ export default function UploadCandidateDocuments() {
       notify.error(error.message || `Failed to upload ${type}.`);
     } finally {
       setUploading((prev) => ({ ...prev, [type]: false }));
-      setTimeout(
-        () => setProgress((prev) => ({ ...prev, [type]: 0 })),
-        1500
-      );
+      setTimeout(() => setProgress((prev) => ({ ...prev, [type]: 0 })), 1500);
     }
   };
 
@@ -179,82 +198,93 @@ export default function UploadCandidateDocuments() {
 
   // 🔹 UI
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-semibold text-[#004080] mb-6">
-        Upload Your Documents
-      </h1>
-      <Card className="w-full border border-gray-200 shadow-lg bg-white">
-        <CardHeader>
-          <CardDescription>
-            Upload your verified identification and academic documents below.
-          </CardDescription>
-        </CardHeader>
+    <div className="">
+      {allowUpload ? (
+        <div className="p-6 bg-gray-50 min-h-screen">
+          <h1 className="text-2xl font-semibold text-[#004080] mb-6">
+            Upload Your Documents
+          </h1>
+          <Card className="w-full border border-gray-200 shadow-lg bg-white">
+            <CardHeader>
+              <CardDescription>
+                Upload your verified identification and academic documents
+                below.
+              </CardDescription>
+            </CardHeader>
 
-        <CardContent className="space-y-6">
-          {DOCUMENT_TYPES.map((type) => {
-            const status = documents[type]?.status || "Pending";
-            return (
-              <div
-                key={type}
-                className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4"
-              >
-                <div className="w-full sm:w-1/2">
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>{type}</Label>
-                    <Badge
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        statusStyles[status] || "bg-gray-400 text-white"
-                      }`}
-                    >
-                      {status}
-                    </Badge>
-                  </div>
-
-                  <Input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    onChange={(e) =>
-                      e.target.files?.[0] &&
-                      handleFileChange(type, e.target.files[0])
-                    }
-                    disabled={uploading[type]}
-                  />
-                  {uploading[type] && (
-                    <div className="mt-2">
-                      <Progress value={progress[type] || 0} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                  <Button
-                    onClick={() => handleUpload(type)}
-                    disabled={uploading[type] || !(documents[type] as any)?.file}
-                    className="bg-gray-600 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+            <CardContent className="space-y-6">
+              {DOCUMENT_TYPES.map((type) => {
+                const status = documents[type]?.status || "Pending";
+                return (
+                  <div
+                    key={type}
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4"
                   >
-                    {uploading[type] ? "Uploading..." : "Upload"}
-                  </Button>
+                    <div className="w-full sm:w-1/2">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label>{type}</Label>
+                        <Badge
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            statusStyles[status] || "bg-gray-400 text-white"
+                          }`}
+                        >
+                          {status}
+                        </Badge>
+                      </div>
 
-                  {documents[type]?.path && (
-                    <a
-                      href={document_url + documents[type].path}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-center bg-gray-600 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200"
-                    >
-                      View
-                    </a>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </CardContent>
+                      <Input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        onChange={(e) =>
+                          e.target.files?.[0] &&
+                          handleFileChange(type, e.target.files[0])
+                        }
+                        disabled={uploading[type]}
+                      />
+                      {uploading[type] && (
+                        <div className="mt-2">
+                          <Progress value={progress[type] || 0} />
+                        </div>
+                      )}
+                    </div>
 
-        <CardFooter className="text-center text-gray-500 text-sm">
-          Please ensure all uploaded documents are clear and valid.
-        </CardFooter>
-      </Card>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Button
+                        onClick={() => handleUpload(type)}
+                        disabled={
+                          uploading[type] || !(documents[type] as any)?.file
+                        }
+                        className="bg-gray-600 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {uploading[type] ? "Uploading..." : "Upload"}
+                      </Button>
+
+                      {documents[type]?.path && (
+                        <a
+                          href={document_url + documents[type].path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-center bg-gray-600 hover:bg-gray-800 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200"
+                        >
+                          View
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+
+            <CardFooter className="text-center text-gray-500 text-sm">
+              Please ensure all uploaded documents are clear and valid.
+            </CardFooter>
+          </Card>
+        </div>
+      ) : (
+        <Card className="flex justify-center items-center bg-red-100 border border-red-500">
+          <p className="text-black">-- Not Activited --</p>
+        </Card>
+      )}
     </div>
   );
 }

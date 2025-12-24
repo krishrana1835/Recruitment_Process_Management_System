@@ -10,6 +10,13 @@ export interface CandidateDto {
   email: string;
 }
 
+export interface SelectedCandidatesDto {
+  candidate_id: string;
+  full_name: string;
+  email: string;
+  doc_upload: boolean;
+}
+
 export interface UploadCandidateResumeDto {
   candidate_id: string;
   resume_path: string;

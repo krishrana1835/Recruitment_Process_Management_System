@@ -18,37 +18,37 @@ export default function ShortListCandidate() {
   const [loading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [email, setCandidateEmail] = useState<string>('');
+  const [email, setCandidateEmail] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
-      if(!id){
+      if (!id) {
         notify.error("Candidate ID is missing.");
         return;
       }
-      if(!user){
+      if (!user) {
         notify.error("User not authenticated.");
         return;
       }
-      if(!user.token){
+      if (!user.token) {
         notify.error("User token not found.");
         return;
       }
       try {
-      const storedId = sessionStorage.getItem("currentJobId");
-      if (!storedId) throw new Error("Job ID is missing in session storage.");
-      setJobId(parseInt(storedId) || null);
+        const storedId = sessionStorage.getItem("currentJobId");
+        if (!storedId) throw new Error("Job ID is missing in session storage.");
+        setJobId(parseInt(storedId) || null);
 
-      const response = await getCandidateDashProfile(id, user?.token);
-      setCandidateEmail(response.email)
-    } catch (error) {
-      notify.error(
-        "Unable to retrieve Job ID. Please navigate from the job applications list."
-      );
-      console.error("Error retrieving Job ID from session storage:", error);
-    }
-    }
-    fetchData()
+        const response = await getCandidateDashProfile(id, user?.token);
+        setCandidateEmail(response.email);
+      } catch (error) {
+        notify.error(
+          "Unable to retrieve Job ID. Please navigate from the job applications list."
+        );
+        console.error("Error retrieving Job ID from session storage:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   // --- Handle Status Change ---
@@ -73,7 +73,7 @@ export default function ShortListCandidate() {
         changed_by: user.userId,
       };
 
-      await updateCandidateStatus(dto,email, user.token);
+      await updateCandidateStatus(dto, email, user.token);
       notify.success(`Candidate status updated to "${status}".`);
     } catch (error: any) {
       console.error("Error updating status:", error);
@@ -96,34 +96,36 @@ export default function ShortListCandidate() {
         allowUpdate={false}
         tabs={["Reviews", "Skills", "Status History"]}
       />
-      <div className="flex flex-col items-center justify-center w-full space-y-6">
-        {/* Buttons Section */}
-        <div className="flex justify-center gap-4 mt-4">
-          <Button
-            disabled={loading}
-            onClick={() => handleStatusChange("Shortlisted")}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            {loading ? "Updating..." : "Accept"}
-          </Button>
+      {user?.role !== "Viewer" && (
+        <div className="flex flex-col items-center justify-center w-full space-y-6">
+          {/* Buttons Section */}
+          <div className="flex justify-center gap-4 mt-4">
+            <Button
+              disabled={loading}
+              onClick={() => handleStatusChange("Shortlisted")}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {loading ? "Updating..." : "Accept"}
+            </Button>
 
-          <Button
-            disabled={loading}
-            onClick={() => handleStatusChange("Rejected")}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            {loading ? "Updating..." : "Reject"}
-          </Button>
+            <Button
+              disabled={loading}
+              onClick={() => handleStatusChange("Rejected")}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {loading ? "Updating..." : "Reject"}
+            </Button>
 
-          <Button
-            disabled={loading}
-            onClick={() => handleStatusChange("Applied")}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black"
-          >
-            {loading ? "Updating..." : "Pending"}
-          </Button>
+            <Button
+              disabled={loading}
+              onClick={() => handleStatusChange("Applied")}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black"
+            >
+              {loading ? "Updating..." : "Pending"}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

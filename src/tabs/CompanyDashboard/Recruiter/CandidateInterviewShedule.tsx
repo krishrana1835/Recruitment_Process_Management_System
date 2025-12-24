@@ -108,7 +108,11 @@ const CandidateInterviewSchedule = ({
           user_id: user.userId,
         };
 
-        if (user?.role === "Admin" || user?.role === "Recruiter") {
+        if (
+          user?.role === "Admin" ||
+          user?.role === "Recruiter" ||
+          user?.role === "Viewer"
+        ) {
           const schedules = await fetchCandidateInterviweSchedule(
             payload,
             user.token
@@ -333,6 +337,7 @@ const CandidateInterviewSchedule = ({
                         val
                       )
                     }
+                    disabled={user?.role === "Viewer"}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select mode" />
@@ -359,13 +364,14 @@ const CandidateInterviewSchedule = ({
               <div className="space-y-3">
                 <p className="font-medium">Interviewers</p>
 
-                {interview.users.map((user, idx) => (
+                {interview.users.map((users, idx) => (
                   <div key={idx} className="flex items-center gap-2">
                     <Select
-                      value={user.user_id}
+                      value={users.user_id}
                       onValueChange={(val) =>
                         handleUserChange(interview.interview_id, idx, val)
                       }
+                      disabled={user?.role === "Viewer"}
                     >
                       <SelectTrigger className="w-64">
                         <SelectValue placeholder="Select interviewer" />
@@ -380,23 +386,27 @@ const CandidateInterviewSchedule = ({
                       </SelectContent>
                     </Select>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeUser(interview.interview_id, idx)}
-                    >
-                      Remove
-                    </Button>
+                    {user?.role !== "Viewer" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeUser(interview.interview_id, idx)}
+                      >
+                        Remove
+                      </Button>
+                    )}
                   </div>
                 ))}
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addUser(interview.interview_id)}
-                >
-                  + Add interviewer
-                </Button>
+                {user?.role !== "Viewer" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addUser(interview.interview_id)}
+                  >
+                    + Add interviewer
+                  </Button>
+                )}
               </div>
 
               <div className="col-span-2">
@@ -419,6 +429,7 @@ const CandidateInterviewSchedule = ({
                     )
                   }
                   className="mt-1"
+                  disabled={user?.role === "Viewer"}
                 />
               </div>
 
@@ -434,20 +445,24 @@ const CandidateInterviewSchedule = ({
               <hr />
 
               <div className="flex justify-start gap-2 pt-4">
-                <Button
-                  variant="secondary"
-                  className="cursor-pointer"
-                  onClick={() => handleUpdate(interview.interview_id)}
-                >
-                  Update
-                </Button>
+                {user?.role !== "Viewer" && (
+                  <Button
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => handleUpdate(interview.interview_id)}
+                  >
+                    Update
+                  </Button>
+                )}
 
                 {((allowDelete && user?.role === "Admin") ||
                   user?.role === "Recruiter") && (
                   <Button
                     variant="destructive"
                     className="cursor-pointer"
-                    onClick={() => handleDelete(interview.interview_id)}
+                    onClick={() => {
+                      handleDelete(interview.interview_id);
+                    }}
                   >
                     Delete
                   </Button>
@@ -478,9 +493,10 @@ const CandidateInterviewSchedule = ({
                     Show Candidate Info
                   </Button>
                 )}
-                {((allowDelete && user?.role === "Admin") ||
+                {(user?.role === "Admin" ||
                   user?.role === "HR" ||
-                  user?.role === "Interviewer") && (
+                  user?.role === "Interviewer" ||
+                  user?.role === "Viewer") && (
                   <Button
                     className="cursor-pointer"
                     onClick={() =>

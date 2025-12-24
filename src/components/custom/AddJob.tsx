@@ -98,12 +98,12 @@ const AddJob = ({ action }: Action) => {
           // ✅ Use skillsList directly instead of availableSkills
           const rskills = skillsList.filter((skill: any) =>
             requiredSkillsResponse.some(
-              (rs: any) => rs.skill_ids === skill.skill_id
+              (rs: any) => rs.skill_id === skill.skill_id
             )
           );
           const pskills = skillsList.filter((skill: any) =>
             preferredSkillsResponse.some(
-              (rs: any) => rs.skill_ids === skill.skill_id
+              (rs: any) => rs.skill_id === skill.skill_id
             )
           );
 

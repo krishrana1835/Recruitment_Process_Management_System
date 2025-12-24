@@ -10,4 +10,5 @@ export interface HrReview{
     career_path_notes: string,
     user_id: string,
     interview_id: number,
+    total_score: number
 }
