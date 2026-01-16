@@ -18,6 +18,19 @@ import type { SheduleInterviewDto } from "@/interfaces/Interview_interface";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { fetchRounds, scheduleInterview } from "@/api/Interview_api";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  // DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import type { EmailScheduler } from "@/interfaces/Email_interface";
+import { scheduleEmail } from "@/api/Email_api";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Interviewer {
   user_id: string;
@@ -66,6 +79,13 @@ export default function ScheduleInterviewForm() {
     },
   ]);
   const [round, setSelectedRound] = useState<number>(0);
+  const [access, setAccess] = useState<string>("Interviewer");
+  const [subject, setSubject] = useState("Interview Reminder");
+  const [body, setBody] = useState(
+    "This is the email for reminder of the interview."
+  );
+  const [dateTime, setDateTime] = useState("");
+  const [reminder, setReminder] = useState(false);
 
   // Fetch interviewers
   useEffect(() => {
@@ -106,7 +126,7 @@ export default function ScheduleInterviewForm() {
       }
       try {
         const res = await fetchRounds(parseInt(job_id), user.token);
-        setInterviewRounds([...interviewRounds,...(res.roundData || [])]);
+        setInterviewRounds([...interviewRounds, ...(res.roundData || [])]);
       } catch (err: any) {
         notify.error(err.message);
       }
@@ -137,6 +157,7 @@ export default function ScheduleInterviewForm() {
       const payload: SheduleInterviewDto = {
         job_id: Number(job_id),
         round_number: roundNumber,
+        accessTo: access === "Interviewer" ? 0 : 1,
         scheduled_start_time: startTime,
         duration_per_interview: duration,
         interviewers: interviewersPayload,
@@ -154,8 +175,114 @@ export default function ScheduleInterviewForm() {
     }
   };
 
+  const escapeHtml = (text: string) =>
+    text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  const textToHtml = (text: string) =>
+    escapeHtml(text)
+      .split("\n")
+      .map((line) => `<p>${line || "&nbsp;"}</p>`)
+      .join("");
+
+  const toUTCISOString = (localDateTime: string) =>
+    new Date(localDateTime).toISOString();
+
+  const handleEmailScheduler = async () => {
+    const payload: EmailScheduler = {
+      subject,
+      body: textToHtml(body),
+      toUserIds: panels.map((p) => p.members).flat(),
+      ccUserIds: [],
+      scheduledAt: toUTCISOString(dateTime),
+    };
+
+    if (!user?.token) {
+      notify.error("Session Expired");
+      return;
+    }
+
+    if (payload.toUserIds.length === 0 && payload.ccUserIds.length === 0) {
+      notify.error("Plese Select interviewers");
+      return;
+    }
+
+    try {
+      await scheduleEmail(payload, user.token);
+      notify.success(
+        "Email Scheduled",
+        "Email is scheduled to send to all interviewers"
+      );
+    } catch (err: any) {
+      notify.error("Error", err.message);
+    }
+  };
+
   return (
     <div className="mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
+      <div className="w-full flex justify-between">
+        <div className="flex flex-row gap-2 items-center justify-center">
+          <Checkbox
+            id="id"
+            onClick={() => {
+              setReminder(!reminder);
+            }}
+          />
+          <Label htmlFor="id">Set Reminder</Label>
+        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="default">Auto Mailer</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Email</DialogTitle>
+              <DialogDescription>
+                This is email sheduler. <br />
+                Automatically send email to interviewers of current round.
+              </DialogDescription>
+            </DialogHeader>
+            <Label htmlFor="subject">Subject:</Label>
+            <Input
+              id="subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+            />
+
+            <Label htmlFor="Body">Body:</Label>
+            <Textarea
+              id="Body"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              className="h-52"
+              required
+            />
+
+            <Label htmlFor="time">Time:</Label>
+            <DatePicker
+              selected={dateTime ? new Date(dateTime) : null}
+              onChange={(date: Date | null) =>
+                setDateTime(date ? date.toISOString() : "")
+              }
+              showTimeSelect
+              dateFormat="dd/MM/yyyy h:mm aa"
+              timeFormat="h:mm aa"
+              timeIntervals={15}
+              className="
+                flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 
+                text-sm ring-offset-background placeholder:text-muted-foreground 
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
+                focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              required
+            />
+
+            {/* <DialogFooter className="sm:justify-start">
+              <Button onClick={handleEmailScheduler}>Set Auto Email</Button>
+            </DialogFooter> */}
+          </DialogContent>
+        </Dialog>
+      </div>
+      <hr />
       <h2 className="text-3xl font-bold mb-4 text-center">
         Schedule Interviews
       </h2>
@@ -175,6 +302,9 @@ export default function ScheduleInterviewForm() {
             selected={startTime}
             onChange={(date) => setStartTime(date)}
             showTimeSelect
+            dateFormat="dd/MM/yyyy h:mm aa"
+            timeFormat="h:mm aa"
+            timeIntervals={15}
             className="
               flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 
               text-sm ring-offset-background placeholder:text-muted-foreground 
@@ -192,7 +322,7 @@ export default function ScheduleInterviewForm() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <Label className="pb-2">Interview Type</Label>
           <Select
@@ -235,6 +365,32 @@ export default function ScheduleInterviewForm() {
             </SelectContent>
           </Select>
         </div>
+        <div className="">
+          <Label className="pb-2">Allow Access to</Label>
+          <Select
+            value={access}
+            onValueChange={(val) => setAccess(val)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Interview Type" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem
+                  key={"Interviwer"}
+                  value="Interviewer"
+                  
+                >
+                  Interviewer
+                </SelectItem>
+                <SelectItem
+                  key={"HR"}
+                  value="HR"
+                >
+                  HR
+                </SelectItem>
+            </SelectContent>
+          </Select>
+          </div>
       </div>
 
       <div>
@@ -303,7 +459,13 @@ export default function ScheduleInterviewForm() {
                       <SelectContent>
                         {interviewers.map((iv) => (
                           <SelectItem key={iv.user_id} value={iv.user_id}>
-                            {iv.name} {"( "+ iv.roles.sort().map((r) => r.role_name).join(" / ") +" )"}
+                            {iv.name}{" "}
+                            {"( " +
+                              iv.roles
+                                .sort()
+                                .map((r) => r.role_name)
+                                .join(" / ") +
+                              " )"}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -342,10 +504,18 @@ export default function ScheduleInterviewForm() {
         <Button variant="outline" onClick={addPanel} className="cursor-pointer">
           Add Panel
         </Button>
+        <br />
       </div>
 
       <div className="pt-6 flex justify-center">
-        <Button size="lg" onClick={handleSubmit} className="cursor-pointer">
+        <Button
+          size="lg"
+          onClick={() => {
+            handleSubmit();
+            if (reminder) handleEmailScheduler();
+          }}
+          className="cursor-pointer"
+        >
           Schedule Interviews
         </Button>
       </div>

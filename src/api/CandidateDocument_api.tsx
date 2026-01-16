@@ -8,7 +8,7 @@ export async function getCandidateDocuments(
   token: string
 ): Promise<CandidateDocumentDto[]> {
   try {
-    const response = await fetch(`${api_url}/Candidate_Documents/${candidate_id}`, {
+    const response = await fetch(`${api_url}/Candidate_Documents?candidate_id=${candidate_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -55,9 +55,9 @@ export async function uploadCandidateDocuments(
 }
 
 export function GetUploadStatus(data: string, token: string) {
-  return apiRequest<boolean>(`/Candidate_Documents/GetUploadStatus/${data}`, "GET", token);
+  return apiRequest<boolean>(`/Candidate_Documents/GetUploadStatus?candidate_id=${data}`, "GET", token);
 }
 
 export function UpdateUploadStatus(data: {candidate_id: string, doc_upload: boolean}, token: string) {
-  return apiRequest<boolean>(`/Candidate_Documents/UpdateUploadStatus`, "POST", token, data);
+  return apiRequest<boolean>(`/Candidate_Documents/UpdateUploadStatus`, "PUT", token, data);
 }

@@ -1,3 +1,5 @@
+import { apiRequestNoAuth } from "./apiRequest";
+
 // API base URL from environment variables
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -45,4 +47,16 @@ export async function verifyOtp(email: string, otp: string): Promise<any> {
     console.error(error.message);
     throw new Error(error.message || "Network error while verifying OTP");
   }
+}
+
+export function GenerateOtp(data: {identifier: string}) {
+  return apiRequestNoAuth<any>(`/EmailVerification/generate-fpassword-otp`, "POST", data);
+}
+
+export function VerifyOtp(data: {identifier: string, otp: string}) {
+  return apiRequestNoAuth<any>(`/EmailVerification/verify-fpassword-otp`, "POST", data);
+}
+
+export function ResetPassword(data: {identifier: string, resetToken: string, newPassword: string}) {
+  return apiRequestNoAuth<any>(`/EmailVerification/reset-password`, "POST", data);
 }

@@ -62,7 +62,7 @@ export default function JobDetails({ jobId, onBack }: JobDetailsProps) {
         const reqSkills = data.jobs_Skills
           .filter((js: any) => js.skill_type === "R")
           .map((js: any) => {
-            const skill = allSkills.find((s) => s.skill_id === js.skill_ids);
+            const skill = allSkills.find((s) => s.skill_id === js.skill_id);
             return skill || { skill_id: js.skill_ids, skill_name: "Unknown Skill" };
           });
         setRequiredSkills(reqSkills);
@@ -70,7 +70,7 @@ export default function JobDetails({ jobId, onBack }: JobDetailsProps) {
         const prefSkills = data.jobs_Skills
           .filter((js: any) => js.skill_type === "P")
           .map((js: any) => {
-            const skill = allSkills.find((s) => s.skill_id === js.skill_ids);
+            const skill = allSkills.find((s) => s.skill_id === js.skill_id);
             return skill || { skill_id: js.skill_ids, skill_name: "Unknown Skill" };
           });
         setPreferredSkills(prefSkills);

@@ -1,10 +1,17 @@
 import type { SelectedCandidatesDto } from "@/interfaces/Candidate_interface";
 import { apiRequest } from "./apiRequest";
 
-export function GetSelectedCandidates(data: number, token: string) {
-  return apiRequest<SelectedCandidatesDto[]>(`/Interview/GetSelectedCandidates/${data}`, "GET", token);
+export interface UpdateDocVerification{
+  document_id: number;
+  verification_status: string;
+  job_id: number;
+  user_id: string;
 }
 
-export function UpdateVerificationStatus(data: {document_id: number, verification_status: string}, token: string){
-  return apiRequest<any>(`/Candidate_Documents/UpdateVerificationStatus`, "POST", token, data);
+export function GetSelectedCandidates(data: number, token: string) {
+  return apiRequest<SelectedCandidatesDto[]>(`/Interview/GetSelectedCandidates?job_id=${data}`, "GET", token);
+}
+
+export function UpdateVerificationStatus(data: UpdateDocVerification, token: string){
+  return apiRequest<any>(`/Candidate_Documents/UpdateVerificationStatus`, "PUT", token, data);
 }

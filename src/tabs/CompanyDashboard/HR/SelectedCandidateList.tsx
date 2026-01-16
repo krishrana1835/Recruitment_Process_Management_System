@@ -119,6 +119,7 @@ export default function SelectedCandidates() {
             open={openModal}
             onClose={() => setOpenModal(false)}
             candidateId={selectedCandidate}
+            jobId={Number(jobId)}
           />
         )}
       </CardContent>

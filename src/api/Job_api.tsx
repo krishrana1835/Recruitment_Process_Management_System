@@ -1,4 +1,6 @@
 import type { CreateNewJobDto, ListAllJobsDto, UpdateJobDto } from "@/interfaces/Jobs_interface";
+import { apiRequest } from "./apiRequest";
+import type { JobTitleInterface } from "@/tabs/CompanyDashboard/Admin/AddMail";
 
 // Get the API URL from environment variables
 const api_url = import.meta.env.VITE_API_URL
@@ -106,7 +108,7 @@ export async function getJob(
   token: string
 ): Promise<any> {
   try {
-    const response = await fetch(`${api_url}/Job/${job_id}`, {
+    const response = await fetch(`${api_url}/Job/Job?job_id=${job_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -139,7 +141,7 @@ export async function deleteJob(
   token: string
 ): Promise<any> {
   try {
-    const response = await fetch(`${api_url}/Job/${job_id}`, {
+    const response = await fetch(`${api_url}/Job?job_id=${job_id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -165,4 +167,12 @@ export async function deleteJob(
     console.error("Error deleting job:", error);
     throw new Error(error.message || "Network error while deleting job");
   }
+}
+
+export function getJobTitles(token: string) {
+  return apiRequest<JobTitleInterface[]>(`/Job/GetAllJobs?sorted=true`, "GET", token);
+}
+
+export function getScheduledJobs(data: "Scheduled" | "All" ,token: string) {
+  return apiRequest<ListAllJobsDto[]>(`/Job/GetScheduledJobs?filter=${data}`, "GET", token);
 }

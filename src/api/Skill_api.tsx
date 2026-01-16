@@ -130,7 +130,7 @@ export async function assignSkillsToCandidateInRegistration(
  * @returns - Array of Skills with it's Id
  */
 export function addSkillApi(data: string, token: string) {
-  return apiRequest<SkillDto[]>(`/Skill/AddSkill/${data}`, "GET", token);
+  return apiRequest<SkillDto[]>(`/Skill/AddSkill?skill=${data}`, "GET", token);
 }
 
 /**
@@ -140,7 +140,7 @@ export function addSkillApi(data: string, token: string) {
  * @returns - Updated Skill with it's Id
  */
 export function updateSkillApi(data: SkillDto, token: string) {
-  return apiRequest<SkillDto>(`/Skill/UpdateSkill`, "POST", token, data);
+  return apiRequest<SkillDto>(`/Skill/UpdateSkill`, "PUT", token, data);
 }
 
 /**
@@ -150,5 +150,5 @@ export function updateSkillApi(data: SkillDto, token: string) {
  * @returns - Updated Skill with it's Id
  */
 export function deleteSkillApi(data: number, token: string) {
-  return apiRequest<SkillDto>(`/Skill/DeleteSkill/${data}`, "DELETE", token);
+  return apiRequest<SkillDto>(`/Skill/DeleteSkill?skill_id=${data}`, "DELETE", token);
 }

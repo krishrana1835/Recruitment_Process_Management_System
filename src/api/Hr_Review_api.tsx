@@ -5,5 +5,5 @@ export function addOrUpdateHrReview(data: HrReview , token: string) {
   return apiRequest<HrReview>(`/HR_Review/Add-Update`, "POST", token, data);
 }
 export function getHrReview(data: {interview_id: number, user_id: string} , token: string) {
-  return apiRequest<HrReview>(`/HR_Review/GetReview/${data.interview_id}/${data.user_id}`, "GET", token);
+  return apiRequest<HrReview>(`/HR_Review/GetReview?interview_id=${data.interview_id}&user_id=${data.user_id}`, "GET", token);
 }

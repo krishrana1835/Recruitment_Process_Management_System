@@ -47,6 +47,20 @@ import InterviewRatingCard from "./tabs/CompanyDashboard/Interviewer/InterviewRa
 import ListCandidatesWithScores from "./tabs/CompanyDashboard/HR/ListCandidatesWithScores";
 import ListJobsDocVerification from "./tabs/CompanyDashboard/HR/ListJobsForDocVerif";
 import SelectedCandidates from "./tabs/CompanyDashboard/HR/SelectedCandidateList";
+import MailManager from "./tabs/CompanyDashboard/Admin/MailManage";
+import AddMail from "./tabs/CompanyDashboard/Admin/AddMail";
+import ShortlistedCandidates from "./tabs/CompanyDashboard/Reviewer/ShortlistedCandidates";
+import EmployeeCandidates from "./tabs/CompanyDashboard/HR/EmployeeCandidates";
+import ListJobemployeeManage from "./tabs/CompanyDashboard/HR/ListJobemployeeManage";
+import InterviewerReports from "./tabs/CompanyDashboard/Reports/InterviewerReports";
+import ReportsNavigator from "./tabs/CompanyDashboard/Reports/ReportNevigator";
+import TechnologyWiseData from "./tabs/CompanyDashboard/Reports/TechWiseReport";
+import ExperienceWiseReport from "./tabs/CompanyDashboard/Reports/ExperienceWiseReport";
+import ManageEmployees from "./tabs/CompanyDashboard/HR/ManageEmployees";
+import DailySummaryDashboard from "./tabs/CompanyDashboard/Reports/DailySummary";
+import CandidateSummary from "./tabs/CompanyDashboard/Reports/CandidateSummary";
+import ListCandidates from "./tabs/CompanyDashboard/Reports/ListCandidates";
+import ForgotPassword from "./tabs/Authentication/ForgotPassword";
 
 /**
  * Main application component that sets up routing and authentication.
@@ -81,6 +95,8 @@ function App() {
             <Route path="/unauthorized" element={<Unauthorized />} />{" "}
             {/* Route for logging out */}
             <Route path="/logout" element={<Logout />} />{" "}
+            {/* Route for Forgot Password */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             {/* Protected route for the company dashboard and its sub-routes */}
             <Route
               path="/company/dashboard"
@@ -279,7 +295,7 @@ function App() {
                 path="jobs/view/:id"
                 element={
                   <ProtectedRoute
-                    requiredRole={["Admin", "Reviewer", "Recruiter", "Viewer"]}
+                    requiredRole={["Admin", "Reviewer", "Recruiter", "Viewer", "Interviewer"]}
                   >
                     {" "}
                     {/* Generic delete handler for Admin */}
@@ -378,6 +394,26 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+               <Route
+                path="mails"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <MailManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="mails/add"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <AddMail />
+                  </ProtectedRoute>
+                }
+              />
 
               {/*Recruiter Routes start here */}
               <Route
@@ -441,6 +477,17 @@ function App() {
                     requiredRole={["Recruiter", "Admin", "Interviewer", "HR", "Viewer"]}
                   >
                     <CandidateInterviewSchedule allowDelete={true} />
+                  </ProtectedRoute>
+                }
+              />
+              
+              <Route
+                path="shortlisted-candidates/:job_title/:job_id"
+                element={
+                  <ProtectedRoute
+                    requiredRole={["Recruiter", "Admin", "Reviewer", "Viewer"]}
+                  >
+                    <ShortlistedCandidates/>
                   </ProtectedRoute>
                 }
               />
@@ -518,6 +565,37 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="manage-employee/jobs"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Viewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <ListJobemployeeManage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="manage-employee/jobs/selected/:jobId"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Viewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <EmployeeCandidates />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="manage-employee/jobs/employee/:jobId"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Viewer", "Recruiter"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <ManageEmployees />
+                  </ProtectedRoute>
+                }
+              />
 
               {/*Candidate Routes start here */}
               <Route
@@ -587,6 +665,84 @@ function App() {
                     {" "}
                     {/* Generic delete handler for Admin */}
                     <CandidateInterviewScheduleData />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Reports and analysis routes*/}
+              <Route
+                path="reports"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Viewer", "Interviewer", "Recruiter", "Recruiter"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <ReportsNavigator />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/interviewer"
+                element={
+                  <ProtectedRoute requiredRole={["Admin"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <InterviewerReports />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/technology-profiles"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Interviewer", "Viewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <TechnologyWiseData />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/experience-candidates"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Interviewer", "Viewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <ExperienceWiseReport />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/daily-summary"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Viewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <DailySummaryDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/candidate-summary"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Recruiter", "Viewer", "Interviewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <ListCandidates />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="reports/candidate-summary/:candidateId"
+                element={
+                  <ProtectedRoute requiredRole={["Admin", "HR", "Recruiter", "Viewer", "Interviewer"]}>
+                    {" "}
+                    {/* Generic delete handler for Admin */}
+                    <CandidateSummary />
                   </ProtectedRoute>
                 }
               />

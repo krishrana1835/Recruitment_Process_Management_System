@@ -4,8 +4,10 @@ import type { RoleDto } from "@/interfaces/Roles_interface";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import {
   MdContentCopy,
+  MdOutlineBarChart,
   MdOutlineDelete,
   MdOutlinePreview,
+  MdViewAgenda,
 } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { Button } from "../ui/button";
@@ -743,6 +745,16 @@ export const candidateListColumns: ColumnDef<CandidateListDto>[] = [
             >
               <MdContentCopy className="size-5" /> Copy Email
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              <Link
+                to={`/company/dashboard/reports/candidate-summary/${candidate.candidate_id}`}
+                className="flex flex-row"
+              >
+                <MdOutlineBarChart className="size-5 mr-2" />
+                Candidate Summary
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -839,6 +851,16 @@ export const candidateListColumnsViewer: ColumnDef<CandidateListDto>[] = [
             >
               <MdContentCopy className="size-5" /> Copy Email
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              <Link
+                to={`/company/dashboard/reports/candidate-summary/${candidate.candidate_id}`}
+                className="flex flex-row"
+              >
+                <MdOutlineBarChart className="size-5 mr-2" />
+                Candidate Summary
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -916,150 +938,18 @@ export const documentColumns: ColumnDef<CandidateDocumentDto>[] = [
     },
   },
   {
-    id: "download",
-    header: () => <div className="text-right">Download</div>,
+    id: "View Document",
+    header:"View Document",
     cell: ({ row }) => {
       const document = row.original;
       return (
-        <div className="text-right">
+        <div className="">
           <Button asChild variant="ghost" size="icon">
-            <a href={"http://localhost:5146" + document.file_path} download>
-              <Download className="h-4 w-4" />
-              <span className="sr-only">Download document</span>
-            </a>
+            <Link to={document_url + document.file_path} target="_blank">
+              <Button variant="ghost" className="hover:underline">View</Button>
+            </Link>
           </Button>
         </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const document = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              // onClick={() => handleReplaceDocument(document.document_id)}
-            >
-              <Replace className="mr-2 h-4 w-4" />
-              Upload New
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer text-red-600 focus:text-red-600"
-              // onClick={() => handleDeleteDocument(document.document_id)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
-/**
- * Column definitions for the candidate reviews table.
- * @type {ColumnDef<Candidate_ReviewDto>[]} 
- */
-export const reviewColumns: ColumnDef<Candidate_ReviewDto>[] = [
-  {
-    accessorKey: "review_id",
-    header: "ID",
-  },
-  {
-    accessorKey: "comments",
-    header: "Comments",
-    cell: ({ row }) => (
-      <div className="w-[300px] whitespace-normal">
-        {row.getValue("comments")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "job",
-    header: "Job Title",
-    cell: ({ row }) => {
-      const job = row.getValue("job") as JobDto;
-      return <div className="capitalize">{job?.job_title || "N/A"}</div>;
-    }
-  },
-  {
-    accessorKey: "user_id",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Reviewer
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "reviewed_at",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Date
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("reviewed_at"));
-      const formatted = date.toLocaleDateString("en-US", {
-        year: 'numeric', month: 'short', day: 'numeric'
-      });
-      return <div className="font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const review = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              // onClick={() => handleUpdateReview(review.review_id)}
-            >
-              <FaRegEdit className="size-5 mr-2" />
-              Update Review
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer text-red-600 focus:text-red-600"
-              // onClick={() => handleDeleteReview(review.review_id)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Review
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       );
     },
   },
@@ -1164,143 +1054,11 @@ export const candidateInterviewColumns: ColumnDef<InterviewDtoCandidate>[] = [
       </Button>
     ),
      cell: ({ row }) => <div className="font-medium">{row.original.job.job_title}</div>
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const interview = row.original;
-      return (
-        <div className="text-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer"
-                // onClick={() => handleViewInterview(interview.interview_id)}
-              >
-                <MdOutlinePreview className="size-5 mr-2" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer text-red-600 focus:text-red-600"
-                // onClick={() => handleCancelInterview(interview.interview_id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Cancel Interview
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
-  },
-];
-
-/**
- * Column definitions for the candidate status history table.
- * @type {ColumnDef<CandidateStatusHistoryDto>[]} 
- */
-export const candidateStatusHistoryColumns: ColumnDef<CandidateStatusHistoryDto>[] = [
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-            const status = row.getValue("status") as string;
-            
-            const getVariant = (): "default" | "secondary" | "destructive" | "outline" => {
-                switch (status.toLowerCase()) {
-                    case "hired":
-                    case "offered":
-                        return "default"; // Green
-                    case "interviewing":
-                    case "screening":
-                        return "secondary"; // Blue/Gray
-                    case "applied":
-                        return "outline"; // Bordered
-                    default:
-                        return "destructive"; // Red (for Rejected, etc.)
-                }
-            };
-
-            return (
-                <Badge variant={getVariant()} className="capitalize">
-                    {status}
-                </Badge>
-            );
-        }
-    },
-    {
-        accessorKey: "reason",
-        header: "Reason",
-        cell: ({ row }) => <div className="w-[300px] whitespace-normal">{row.getValue("reason")}</div>
-    },
-    {
-        accessorKey: "job",
-        header: "Job Title",
-        cell: ({ row }) => {
-          return <div className="capitalize">{row.original.job.job_title}</div>;
-        }
-    },
-    {
-        accessorKey: "changed_at",
-        header: ({ column }) => (
-            <Button
-              variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              Date
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          ),
-        cell: ({ row }) => {
-            const date = new Date(row.getValue("changed_at"));
-            const formatted = date.toLocaleDateString("en-US", {
-                year: 'numeric', month: 'short', day: 'numeric'
-            });
-            return <div className="font-medium">{formatted}</div>;
-        }
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-          const statusHistory = row.original;
-          return (
-            <div className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    // onClick={() => handleUpdateStatusReason(statusHistory.candidate_status_id)}
-                  >
-                    <FaRegEdit className="mr-2 h-4 w-4" />
-                    Update Reason
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer text-red-600 focus:text-red-600"
-                    // onClick={() => handleDeleteStatusRecord(statusHistory.candidate_status_id)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Record
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          );
-        },
-      },
+  },{
+    accessorKey: "round_title",
+    header: "Round Title"
+  }, {
+    accessorKey: "status",
+    header: "Status",
+  }
 ];

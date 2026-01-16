@@ -48,32 +48,7 @@ export async function uploadDocument(
   formData.append("foldername", candidate_id);
   formData.append("File", file);
 
-  let uploadUrl = "";
-
-  switch (type) {
-    case "Aadhar Card":
-    case "Aadhar":
-      uploadUrl = `${api_url}/FileUpload/CandidateAadhar`;
-      break;
-
-    case "PAN Card":
-    case "Pan":
-      uploadUrl = `${api_url}/FileUpload/CandidatePan`;
-      break;
-
-    case "College Results":
-    case "College":
-      uploadUrl = `${api_url}/FileUpload/CandidateCollegeResults`;
-      break;
-
-    case "HSC/SSC Result":
-    case "HSC/SSC":
-      uploadUrl = `${api_url}/FileUpload/CandidateHscOrSscResult`;
-      break;
-
-    default:
-      throw new Error(`Unknown document type: ${type}`);
-  }
+  let uploadUrl = `${api_url}/FileUpload/UploadDocument`;
 
   const response = await fetch(uploadUrl, {
     method: "POST",

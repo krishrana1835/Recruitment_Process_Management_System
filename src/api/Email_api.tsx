@@ -1,4 +1,8 @@
 import type { CandidateStatus } from "@/interfaces/Candidate_Status_History_interface";
+import { apiRequest } from "./apiRequest";
+import type { EmailScheduler } from "@/interfaces/Email_interface";
+import type { EmailMessage, EmailUpdateReq, RecipientsRes } from "@/tabs/CompanyDashboard/Admin/MailManage";
+import type { AutoMailerAddReq } from "@/tabs/CompanyDashboard/Admin/AddMail";
 
 /**
  * Represents the structure of an email object.
@@ -101,4 +105,28 @@ export async function sendStatusEmail(
 
   // Send email using your existing sendMail function
   return sendMail(candidateEmail, message.subject, message.body, token);
+}
+
+export function scheduleEmail(data: EmailScheduler , token: string) {
+  return apiRequest<any>(`/Email/EmailScheduler`, "POST", token, data);
+}
+
+export function getAllMails(token: string) {
+  return apiRequest<EmailMessage[]>(`/Email/GetAllMails`, "GET", token);
+}
+
+export function updateEmail(data: EmailUpdateReq,token: string) {
+  return apiRequest<EmailUpdateReq>(`/Email/UpdateEmail`, "PUT", token, data);
+}
+
+export function getRecipients(data: Number,token: string) {
+  return apiRequest<RecipientsRes[]>(`/Email/GetRecpients?id=${data}`, "GET", token);
+}
+
+export function scheduleAutoMail(data: AutoMailerAddReq,token: string) {
+  return apiRequest<any>(`/Email/AutoMail/EmailScheduler`, "POST", token, data);
+}
+
+export function deleteEmail(data: number,token: string) {
+  return apiRequest<any>(`/Email/DeleteEmail?Id=${data}`, "DELETE", token);
 }

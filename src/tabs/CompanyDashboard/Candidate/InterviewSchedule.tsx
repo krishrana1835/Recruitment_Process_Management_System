@@ -13,7 +13,7 @@ import { fetchAppliedJobs } from "@/api/Candidate_Status_History_api";
 interface AppliedJob {
   job_id: number;
   job_title: string;
-  sheduled: string;
+  scheduled: string;
 }
 
 export default function CandidateInterviewScheduleData() {
@@ -47,14 +47,14 @@ export default function CandidateInterviewScheduleData() {
   }, []);
 
   useEffect(() => {
-  if (!selectedJobId) {
-    const first = jobs.find(j => j.sheduled === "Sheduled");
-    if (first) {
-      setSelectedJobId(first.job_id);
-      fetchInterviewSchedule(first.job_id);
+    if (!selectedJobId) {
+      const first = jobs.find((j) => j.scheduled === "Scheduled");
+      if (first) {
+        setSelectedJobId(first.job_id);
+        fetchInterviewSchedule(first.job_id);
+      }
     }
-  }
-}, [jobs]);
+  }, [jobs]);
 
   const fetchInterviewSchedule = async (jobId: number) => {
     if (!user?.token || !user?.userId) return;
@@ -79,14 +79,21 @@ export default function CandidateInterviewScheduleData() {
     }
   };
 
+  if (jobs.length === 0)
+    return (
+      <div className="flex justify-center items-center text-gray-500 font-semibold">
+        --No Schedule Found --
+      </div>
+    );
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 text-black rounded-2xl">
       <h2 className="text-2xl font-semibold mb-6">Your Interview Schedule</h2>
 
-      {/* ✅ SHOW ONLY "Sheduled" JOB TITLES */}
+      {/* ✅ SHOW ONLY "scheduled" JOB TITLES */}
       <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
         {jobs
-          .filter((job) => job.sheduled === "Sheduled")
+          .filter((job) => job.scheduled === "Scheduled")
           .map((job) => {
             const isSelected = selectedJobId === job.job_id;
 
@@ -137,7 +144,7 @@ export default function CandidateInterviewScheduleData() {
       {jobs
         .filter(
           (job) =>
-            job.sheduled === "Sheduled" && interviewsByJob[job.job_id]?.length
+            job.scheduled === "Scheduled" && interviewsByJob[job.job_id]?.length
         )
         .map((job) => (
           <div key={job.job_id} className="mb-10">

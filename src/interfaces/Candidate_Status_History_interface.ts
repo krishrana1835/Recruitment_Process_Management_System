@@ -16,6 +16,7 @@ export interface ApplyForJobByCandidateDto{
 export interface ListJobApplicationStatus{
     candidate_status_id: string;
     status: string;
+    reason: string;
     changed_at: string;
     job: ListJobStatusDto;
 }

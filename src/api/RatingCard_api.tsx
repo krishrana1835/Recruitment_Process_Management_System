@@ -7,9 +7,9 @@ export function fetchRoundRatingCard(data: ReqestPayload, token: string) {
 }
 
 export function getCandidatesWithScore(data: {job_id: number, round_number :number}, token: string) {
-  return apiRequest<CandidatesWithScores[]>(`/RatingCard/GetCandidateWithSocre/${data.job_id}/${data.round_number}`, "GET", token);
+  return apiRequest<CandidatesWithScores[]>(`/RatingCard/GetCandidateWithSocre?job_id=${data.job_id}&round_number=${data.round_number}`, "GET", token);
 }
 
 export function getCandidatesOverAllscore(data: ReqestPayload, token: string) {
-  return apiRequest<RoundData[]>(`/RatingCard/GetCandidateAllScores/${data.job_id}/${data.round_number}/${data.candidate_id}`, "GET", token);
+  return apiRequest<RoundData[]>(`/RatingCard/GetCandidateAllScores?job_id=${data.job_id}&round_number=${data.round_number}&candidate_id=${data.candidate_id}`, "GET", token);
 }

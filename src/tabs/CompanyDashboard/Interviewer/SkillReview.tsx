@@ -35,8 +35,8 @@ interface JobSkill {
 }
 
 interface CandidateSkill {
-  skill_id: number;
-  skill_name: string;
+  skillId: number;
+  skillName: string;
 }
 
 interface CandidateData {
@@ -76,7 +76,7 @@ export interface InterviewSkillSubmission {
 export interface InterviewHistory {
   job_id: number;
   job_title: string;
-  sheduled: null;
+  scheduled: null;
 }
 
 const emptyReview: SkillReviewData = {
@@ -197,7 +197,6 @@ export default function SkillReview() {
           Number(interviewId),
           user.token
         );
-        console.log(res)
         setInterviewHist(res);
       } catch (err: any) {
         notify.error("Error", err.message);
@@ -276,8 +275,8 @@ export default function SkillReview() {
     };
     setExtraSkills((prev) => [...prev, newSkill]);
 
-    setCandidateSkills((prev) => {
-      if (prev.find((cs) => cs.skill_id === skill.skill_id)) return prev;
+    setCandidateSkills((prev: any) => {
+      if (prev.find((cs: any) => cs.skillId === skill.skill_id)) return prev;
       return [
         ...prev,
         { skill_id: skill.skill_id, skill_name: skill.skill_name },
@@ -354,7 +353,7 @@ export default function SkillReview() {
     }
     try {
       await updateInterviewStatus(
-        { interview_id: Number(interviewId), status: status },
+        { interview_id: Number(interviewId), status: status, user_id: user.userId},
         user?.token
       );
       notify.success("Status Change", "Candidate Status Change Successfully");
@@ -505,29 +504,29 @@ export default function SkillReview() {
         <h2 className="text-2xl font-semibold mb-3">Candidate Skills</h2>
         <div className="flex flex-wrap gap-2">
           {candidateSkills.length > 0 ? (
-            candidateSkills.map((cs) => (
+            candidateSkills.map((cs, index) => (
               <button
-                key={cs.skill_id}
+                key={index}
                 onClick={() => {
                   const existingJob = jobSkills.find(
-                    (j) => j.skill_id === cs.skill_id
+                    (j) => j.skill_id === cs.skillId
                   );
                   if (existingJob) {
                     notify.error(
                       "Job Skill",
-                      `${cs.skill_name} is already a job skill.`
+                      `${cs.skillName} is already a job skill.`
                     );
                     return;
                   }
                   addExtraSkillBySkill({
-                    skill_id: cs.skill_id,
-                    skill_name: cs.skill_name,
+                    skill_id: cs.skillId,
+                    skill_name: cs.skillName,
                   });
                 }}
                 className="font-semibold bg-purple-600 text-white rounded-full px-4 py-1 text-sm cursor-pointer"
                 title="Click to add as a reviewable extra skill"
               >
-                {cs.skill_name}
+                {cs.skillName}
               </button>
             ))
           ) : (

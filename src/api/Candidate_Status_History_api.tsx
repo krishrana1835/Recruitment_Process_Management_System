@@ -10,13 +10,12 @@ export async function checkAppliedForJob(
   token: string
 ): Promise<{ applied: boolean }> {
   try {
-    const response = await fetch(`${api_url}/Candidate_Status_History/CheckApplication`, {
-      method: "POST",
+    const response = await fetch(`${api_url}/Candidate_Status_History/CheckApplication?job_id=${payload.job_id}&candidate_id=${payload.candidate_id}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -40,7 +39,7 @@ export async function getJobApplications(
   token: string
 ): Promise<ListJobApplicationStatus[]> {
   try {
-    const response = await fetch(`${api_url}/Candidate_Status_History/GetApplications/${candidate_id}`, {
+    const response = await fetch(`${api_url}/Candidate_Status_History/GetApplications?candidate_id=${candidate_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -69,13 +68,12 @@ export async function getAllJobApplications(
   token: string
 ): Promise<CandidateListDto[]> {
   try {
-    const response = await fetch(`${api_url}/Candidate_Status_History/GetJobApplications`, {
-      method: "POST",
+    const response = await fetch(`${api_url}/Candidate_Status_History/GetJobApplications?JobId=${job_id}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ job_id }),
     });
 
     if (!response.ok) {
@@ -86,10 +84,8 @@ export async function getAllJobApplications(
     }
 
     const data = await response.json();
-    console.log(data)
     return data;
   } catch (error: any) {
-    console.error(error)
     throw new Error(
       error.message || "Network error while fetching applications"
     );
@@ -137,7 +133,7 @@ export async function updateCandidateStatus(
 ): Promise<any> {
   try {
     const response = await fetch(`${api_url}/Candidate_Status_History/UpdateCandidateStatus`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -160,11 +156,10 @@ export async function updateCandidateStatus(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.log(error)
     throw new Error(error.message || "Error updating job status");
   }
 }
 
 export function fetchAppliedJobs(data: string , token: string) {
-  return apiRequest<any[]>(`/Candidate_Status_History/GetAppliedJobs/${data}`, "GET", token);
+  return apiRequest<any[]>(`/Candidate_Status_History/GetAppliedJobs?candidate_id=${data}`, "GET", token);
 }

@@ -58,7 +58,7 @@ export async function getCandidateProfile(
 ): Promise<CandidateProfileDto> {
   try {
     const response = await fetch(
-      `${api_url}/Candidate/GetCandidateProfile/${id}`,
+      `${api_url}/Candidate/GetCandidateProfile?candidateId=${id}`,
       {
         method: "GET",
         headers: {
@@ -86,7 +86,7 @@ export async function getCandidateDashProfile(
 ): Promise<CandidateDashboardProfileData> {
   try {
     const response = await fetch(
-      `${api_url}/Candidate/GetCandidateDashboardProfile/${id}`,
+      `${api_url}/Candidate/GetCandidateDashboardProfile?candidateId=${id}`,
       {
         method: "GET",
         headers: {
@@ -143,7 +143,7 @@ export async function getCandidateResume(
 ): Promise<{ message: string; resume_path: string; success: boolean }> {
   try {
     const response = await fetch(
-      `${api_url}/Candidate/GetResume/${candidate_id}`,
+      `${api_url}/Candidate/GetResume?candidate_id${candidate_id}`,
       {
         method: "GET",
         headers: {

@@ -85,7 +85,7 @@ const HrReviewForm = () => {
       return;
     }
     try {
-      await updateInterviewStatus({ interview_id: Number(interviewId), status }, user.token);
+      await updateInterviewStatus({ interview_id: Number(interviewId), status, user_id: user.userId }, user.token);
       notify.success("Status Change", "Candidate Status Change Successfully");
     } catch (err: any) {
       notify.error("Error", err.message);

@@ -12,7 +12,7 @@ import { notify } from "@/components/custom/Notifications";
 import { getAllJobs } from "@/api/Job_api";
 import JobDetails from "./JobDetails";
 
-export default function OpenJobList () {
+export default function OpenJobList() {
   const [jobs, setJobs] = useState<ListOpenJobsForCandidateDto[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,9 +62,19 @@ export default function OpenJobList () {
   if (selectedJobId !== null) {
     // Render JobDetails when a job is selected
     return (
-      <JobDetails jobId={selectedJobId.toString()} onBack={() => setSelectedJobId(null)} />
+      <JobDetails
+        jobId={selectedJobId.toString()}
+        onBack={() => setSelectedJobId(null)}
+      />
     );
   }
+
+  if (jobs.length === 0)
+    return (
+      <div className="flex justify-center items-center text-gray-500 font-semibold">
+        --No Job Openings Found --
+      </div>
+    );
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -92,4 +102,4 @@ export default function OpenJobList () {
       </div>
     </div>
   );
-};
+}

@@ -141,7 +141,7 @@ export async function getUserProfile(
 ): Promise<UserProfileDto> {
   try {
     // Make a GET request to the user profile endpoint
-    const response = await fetch(`${api_url}/Users/GetUserProfile/${id}`, {
+    const response = await fetch(`${api_url}/Users/GetUserProfile?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -184,7 +184,7 @@ export async function getUserProfileData(
 ): Promise<UserDashboardProfileData> {
   try {
     // Make a PUT request to update user data
-    const response = await fetch(`${api_url}/Users/GetUserProfileToUpdate/${id}`, {
+    const response = await fetch(`${api_url}/Users/GetUserProfileToUpdate?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -329,7 +329,7 @@ export async function updateUser(
 export async function deleteUser(id: string, token: string): Promise<void> {
   try {
     // Make a DELETE request to delete a user
-    const response = await fetch(`${api_url}/Users/DeleteUser/${id}`, {
+    const response = await fetch(`${api_url}/Users/DeleteUser?user_id=${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }, // Include the authorization token
     });

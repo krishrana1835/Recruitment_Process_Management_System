@@ -6,5 +6,5 @@ export function addOrUpdateCandidateInterviewFeedback(data: InterviewSkillSubmis
 }
 
 export function fetchCandidateFeedback(data: {interview_id: number, user_id: string} , token: string) {
-  return apiRequest<InterviewSkillSubmission>(`/Interview_Feedback/GetFeedback`, "POST", token, data);
+  return apiRequest<InterviewSkillSubmission>(`/Interview_Feedback/GetFeedback?interview_id=${data.interview_id}&user_id=${data.user_id}`, "GET", token);
 }

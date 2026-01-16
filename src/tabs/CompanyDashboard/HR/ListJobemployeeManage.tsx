@@ -52,23 +52,32 @@ const jobListDocVerification: ColumnDef<ListAllJobsDto>[] = [
       const job = row.original;
 
       return (
-        <Button asChild size="sm">
-          <Link
-            to={`/company/dashboard/candidate-doc-verification/selected/${job.job_id}`}
-          >
-            Selected Candidates
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild size="sm">
+            <Link
+              to={`/company/dashboard/manage-employee/jobs/selected/${job.job_id}`}
+            >
+              Selected Candidates
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link
+              to={`/company/dashboard/manage-employee/jobs/employee/${job.job_id}`}
+            >
+              Employees
+            </Link>
+          </Button>
+        </div>
       );
     },
   },
 ];
 
-export default function ListJobsDocVerification() {
+export default function ListJobemployeeManage() {
   return (
     <Card className="w-full min-h-full">
       <CardTitle className="text-3xl font-semibold mx-auto">
-        Document Verification
+        Upload Offer Latter
       </CardTitle>
       <CardContent className="w-full">
         <ListManager<ListAllJobsDto>

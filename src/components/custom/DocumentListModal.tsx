@@ -27,6 +27,7 @@ interface Props {
   open: boolean;
   onClose: (open: boolean) => void;
   candidateId: string;
+  jobId: number;
 }
 
 const statusDotColor = (
@@ -47,6 +48,7 @@ export default function CandidateDocumentsDialog({
   open,
   onClose,
   candidateId,
+  jobId,
 }: Props) {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<CandidateDocumentDto[]>([]);
@@ -82,7 +84,12 @@ export default function CandidateDocumentsDialog({
 
     try {
       await UpdateVerificationStatus(
-        { document_id, verification_status: status },
+        {
+          document_id,
+          verification_status: status,
+          job_id: jobId,
+          user_id: user.userId,
+        },
         user.token
       );
 

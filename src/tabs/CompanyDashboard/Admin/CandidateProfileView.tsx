@@ -8,18 +8,14 @@ import { DataTable } from "@/components/custom/data-table";
 
 import { IoDocumentsOutline } from "react-icons/io5";
 import { RiCalendarScheduleLine } from "react-icons/ri";
-import { MdOutlineRateReview } from "react-icons/md";
 import { GiSkills } from "react-icons/gi";
-import { GoHistory } from "react-icons/go";
 
 import { getCandidateProfile } from "@/api/Candidate_api";
 import type { CandidateProfileDto } from "@/interfaces/Candidate_interface";
 import {
   candidateInterviewColumns,
   candidateSkillColumns,
-  candidateStatusHistoryColumns,
   documentColumns,
-  reviewColumns,
 } from "@/components/custom/columns";
 import {
   Select,
@@ -243,9 +239,9 @@ const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
                       ? latestStatus
                       : ""
                   }
-                  onValueChange={(value) => {
-                    console.log("New Status:", value);
-                  }}
+                  // onValueChange={(value) => {
+                  //   console.log("New Status:", value);
+                  // }}
                   disabled={!allowUpdate} // Set to true if you want it read-only
                 >
                   <SelectTrigger className="w-full h-10 bg-white border border-gray-300 rounded-md px-3 text-left">
@@ -292,18 +288,6 @@ const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
                   </button>
                 )}
 
-                {tabs.includes("Reviews") && (
-                  <button
-                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                      tab === "Reviews" ? "bg-gray-100" : ""
-                    }`}
-                    onClick={() => setTab("Reviews")}
-                  >
-                    <MdOutlineRateReview className="size-5 mr-2" />
-                    Reviews
-                  </button>
-                )}
-
                 {tabs.includes("Skills") && (
                   <button
                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
@@ -327,18 +311,6 @@ const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
                     Interview
                   </button>
                 )}
-
-                {tabs.includes("Status History") && (
-                  <button
-                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ${
-                      tab === "Status History" ? "bg-gray-100" : ""
-                    }`}
-                    onClick={() => setTab("Status History")}
-                  >
-                    <GoHistory className="size-5 mr-2" />
-                    Status History
-                  </button>
-                )}
               </nav>
             </div>
 
@@ -352,12 +324,6 @@ const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
                   data={candidateData?.candidate_Documents || []}
                 />
               )}
-              {tab === "Reviews" && (
-                <DataTable
-                  columns={reviewColumns}
-                  data={candidateData?.candidate_Reviews || []}
-                />
-              )}
               {tab === "Skills" && (
                 <DataTable
                   columns={candidateSkillColumns}
@@ -368,12 +334,6 @@ const CandidateProfileView = ({ allowUpdate, tabs }: Props) => {
                 <DataTable
                   columns={candidateInterviewColumns}
                   data={candidateData?.interviews || []}
-                />
-              )}
-              {tab === "Status History" && (
-                <DataTable
-                  columns={candidateStatusHistoryColumns}
-                  data={candidateData?.candidate_Status_Histories || []}
                 />
               )}
             </div>

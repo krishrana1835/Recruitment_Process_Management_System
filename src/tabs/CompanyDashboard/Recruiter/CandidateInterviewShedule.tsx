@@ -45,6 +45,7 @@ interface InterviewType {
 export interface CandidateInterviewSchedule {
   interview_id: number;
   round_number: number;
+  accessTo: string;
   location_or_link: string;
   candidate_id: string;
   job_id: number;
@@ -467,32 +468,6 @@ const CandidateInterviewSchedule = ({
                     Delete
                   </Button>
                 )}
-                {user?.role === "Interviewer" && (
-                  <Button
-                    className="cursor-pointer"
-                    onClick={() =>
-                      nevigate(
-                        "/company/dashboard/list-interview-round/candidates/skills/" +
-                          interview.interview_id
-                      )
-                    }
-                  >
-                    Show Candidate Info
-                  </Button>
-                )}
-                {user?.role === "HR" && (
-                  <Button
-                    className="cursor-pointer"
-                    onClick={() =>
-                      nevigate(
-                        "/company/dashboard/list-interview-round/candidates/review/" +
-                          interview.interview_id
-                      )
-                    }
-                  >
-                    Show Candidate Info
-                  </Button>
-                )}
                 {(user?.role === "Admin" ||
                   user?.role === "HR" ||
                   user?.role === "Interviewer" ||
@@ -507,6 +482,48 @@ const CandidateInterviewSchedule = ({
                   >
                     Show Score Card
                   </Button>
+                )}
+                {user?.role === "Interviewer" &&
+                  interview.accessTo === "Interviewer" && (
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() =>
+                        nevigate(
+                          "/company/dashboard/list-interview-round/candidates/skills/" +
+                            interview.interview_id
+                        )
+                      }
+                    >
+                      Show Candidate Info
+                    </Button>
+                  )}
+                {user?.role === "HR" && interview.accessTo === "HR" && (
+                  <Button
+                    className="cursor-pointer"
+                    onClick={() =>
+                      nevigate(
+                        "/company/dashboard/list-interview-round/candidates/review/" +
+                          interview.interview_id
+                      )
+                    }
+                  >
+                    Show Candidate Info
+                  </Button>
+                )}
+                {(user?.role === "Interviewer" || user?.role === "HR") && (
+                  <>
+                    <div className="flex justify-center items-center text-gray-600">
+                      {interview.accessTo === "Interviewer" &&
+                      user?.role != "Interviewer"
+                        ? "Login as Interviewer to access data"
+                        : ""}
+                    </div>
+                    <div className="flex justify-center items-center text-gray-600">
+                      {interview.accessTo === "HR" && user?.role != "HR"
+                        ? "Login as HR to access data"
+                        : ""}
+                    </div>
+                  </>
                 )}
               </div>
             </CardContent>

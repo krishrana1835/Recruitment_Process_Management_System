@@ -114,7 +114,7 @@ export default function Login() {
   return (
     <form onSubmit={handleLogin}> {/* Form for handling login */}
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <Card className="w-full max-w-sm p-6 shadow-lg rounded-2xl"> {/* Login card container */}
+        <Card className="w-full max-w-sm p-6 shadow-lg rounded-2xl m-4"> {/* Login card container */}
           <CardContent>
             <h1 className="text-2xl font-bold mb-6 text-center">Login</h1> {/* Login form title */}
 
@@ -179,6 +179,17 @@ export default function Login() {
                   className="text-blue-600 hover:underline ml-1"
                 >
                   Register
+                </Link>
+              </p>
+            </div>
+            <div className="text-sm text-center mt-4">
+              <p>
+                {/* Don&apos;t have an account? */}
+                <Link
+                  to="/forgot-password"
+                  className="text-blue-600 hover:underline ml-1"
+                >
+                  Forgot Password?
                 </Link>
               </p>
             </div>
