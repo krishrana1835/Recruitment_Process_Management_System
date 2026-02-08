@@ -11,25 +11,29 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Isemployee } from "@/api/Employee_Records_api";
+import { useNavigate } from "react-router-dom";
 
 export function CandidateApplications() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [applications, setApplications] = useState<ListJobApplicationStatus[]>(
-    []
+    [],
   );
+  const [employee, setEmployee] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if (!user) {
+      notify.error("User not authenticated.");
+      return;
+    }
+    if (!user.token) {
+      notify.error("User token not found.");
+      return;
+    }
     const fetchApplications = async () => {
-      if (!user) {
-        notify.error("User not authenticated.");
-        return;
-      }
-      if (!user.token) {
-        notify.error("User token not found.");
-        return;
-      }
-
       try {
         setLoading(true);
         const response = await getJobApplications(user.userId, user.token);
@@ -42,7 +46,25 @@ export function CandidateApplications() {
       }
     };
 
+    const fetchIsEmplloyee = async () => {
+      setLoading(true);
+      try {
+        const response = await Isemployee(user.userId, user.token);
+        setEmployee(response);
+      } catch (err: any) {
+        notify.error("Error", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchIsEmplloyee();
     fetchApplications();
+  }, [user]);
+
+  useEffect(() => {
+    if (employee) {
+      navigate("/unauthorized");
+    }
   }, [user]);
 
   if (loading)
@@ -65,14 +87,17 @@ export function CandidateApplications() {
     );
 
   // Group applications by job title
-  const groupedApplications = applications.reduce((acc, app) => {
-    if (!acc[app.job.job_title]) acc[app.job.job_title] = [];
-    acc[app.job.job_title].push(app);
-    return acc;
-  }, {} as Record<string, ListJobApplicationStatus[]>);
+  const groupedApplications = applications.reduce(
+    (acc, app) => {
+      if (!acc[app.job.job_title]) acc[app.job.job_title] = [];
+      acc[app.job.job_title].push(app);
+      return acc;
+    },
+    {} as Record<string, ListJobApplicationStatus[]>,
+  );
 
   return (
-    <div className="flex flex-col items-start bg-gray-50 min-h-screen p-4 sm:p-6">
+    <div className="flex flex-col items-start bg-gray-50 min-h-screen p-2 sm:p-6">
       <h1 className="text-2xl font-semibold text-[#004080] mb-6">
         My Job Applications
       </h1>
@@ -117,10 +142,10 @@ export function CandidateApplications() {
                         app.status === "Applied"
                           ? "bg-white text-black border border-black rounded-full"
                           : app.status === "Rejected"
-                          ? "bg-red-600 text-white"
-                          : app.status === "Selected"
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-700 text-white"
+                            ? "bg-red-600 text-white"
+                            : app.status === "Selected"
+                              ? "bg-green-600 text-white"
+                              : "bg-gray-700 text-white"
                       }`}
                     >
                       {app.status}

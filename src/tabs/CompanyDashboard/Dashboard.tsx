@@ -13,11 +13,13 @@ import {
   Settings,
   ClipboardList,
   ShieldCheck,
-  Layers
+  Layers,
 } from "lucide-react";
 import { Images } from "@/constants/Images";
 import { motion } from "framer-motion";
 import { useAuth } from "@/route_protection/AuthContext";
+import { notify } from "@/components/custom/Notifications";
+import { Isemployee } from "@/api/Employee_Records_api";
 
 /**
  * Interface for menu items displayed in the sidebar.
@@ -34,9 +36,17 @@ const AdminItems: menu[] = [
   { name: "User Management", path: "users", icon: Users },
   { name: "Job Management", path: "jobs", icon: Briefcase },
   { name: "Candidate Management", path: "candidates", icon: ClipboardList },
-  { name: "Resume Review & Sortlisting", path: "view-open-jobs", icon: FileText },
+  {
+    name: "Resume Review & Sortlisting",
+    path: "view-open-jobs",
+    icon: FileText,
+  },
   { name: "Interview Schedules", path: "job-scheduled-status", icon: Calendar },
-  { name: "Document Verification", path: "candidate-doc-verification", icon: ShieldCheck },
+  {
+    name: "Document Verification",
+    path: "candidate-doc-verification",
+    icon: ShieldCheck,
+  },
   { name: "Employee Management", path: "manage-employee/jobs", icon: Users },
   { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Auto Mailer", path: "mails", icon: Mail },
@@ -48,10 +58,18 @@ const Viewer: menu[] = [
   { name: "User Management", path: "users", icon: Users },
   { name: "Job Management", path: "jobs", icon: Briefcase },
   { name: "Candidate Management", path: "candidates", icon: ClipboardList },
-  { name: "Resume Review & Sortlisting", path: "view-open-jobs", icon: FileText },
+  {
+    name: "Resume Review & Sortlisting",
+    path: "view-open-jobs",
+    icon: FileText,
+  },
   { name: "Interview Schedules", path: "job-scheduled-status", icon: Calendar },
-  { name: "Document Verification", path: "candidate-doc-verification", icon: ShieldCheck },
-  { name: "Reports & Analytics", path: "/dashboard/reports", icon: BarChart3 },
+  {
+    name: "Document Verification",
+    path: "candidate-doc-verification",
+    icon: ShieldCheck,
+  },
+  { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Profile", path: "userprofile", icon: User },
   { name: "Settings", path: "resetpassword", icon: Settings },
 ];
@@ -68,6 +86,7 @@ const CandidateItems: menu[] = [
 
 const ReviewerItems: menu[] = [
   { name: "Job Openings", path: "view-open-jobs", icon: Layers },
+  { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Profile", path: "userprofile", icon: User },
   { name: "Settings", path: "resetpassword", icon: Settings },
 ];
@@ -75,6 +94,7 @@ const ReviewerItems: menu[] = [
 const InterviewerItems: menu[] = [
   { name: "Interview Schedules", path: "job-scheduled-status", icon: Calendar },
   { name: "Skills Manager", path: "skills-manager", icon: Layers },
+  { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Profile", path: "userprofile", icon: User },
   { name: "Settings", path: "resetpassword", icon: Settings },
 ];
@@ -84,6 +104,7 @@ const RecruiterItems: menu[] = [
   { name: "Candidate Management", path: "candidates", icon: ClipboardList },
   { name: "Schedule Interview", path: "job-scheduled-status", icon: Calendar },
   { name: "Skills Manager", path: "skills-manager", icon: Layers },
+  // { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Profile", path: "userprofile", icon: User },
   { name: "Settings", path: "resetpassword", icon: Settings },
 ];
@@ -92,6 +113,7 @@ const HRItems: menu[] = [
   { name: "Interview Schedules", path: "job-scheduled-status", icon: Calendar },
   { name: "Document Verification", path: "candidate-doc-verification", icon: ShieldCheck },
   { name: "Employee Management", path: "manage-employee/jobs", icon: Users },
+  { name: "Reports & Analytics", path: "reports", icon: BarChart3 },
   { name: "Auto Mailer", path: "mails", icon: Mail },
   { name: "Profile", path: "userprofile", icon: User },
   { name: "Settings", path: "resetpassword", icon: Settings },
@@ -114,14 +136,60 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
+    const fetchIsEmplloyee = async () => {
+      if (!user?.token) {
+        notify.error("Session expired.", "Please login again.");
+        return;
+      }
+      try {
+        const response = await Isemployee(user.userId, user.token);
+        if (user.role === "Candidate") {
+          if (response === true) {
+            const filteredMenu = CandidateItems.filter(
+              (item) =>
+                !["openjobs", "myapplications", "interview-schedule"].includes(
+                  item.path,
+                ),
+            );
+
+            const offerAndJoiningItem = {
+              name: "Offer Letter & Joining Date",
+              path: "offer-letter-joining",
+              icon: FileText,
+            };
+
+            setLoadMenu([offerAndJoiningItem, ...filteredMenu]);
+          } else {
+            setLoadMenu(CandidateItems);
+          }
+        }
+      } catch (error: any) {
+        notify.error("Error", error.message);
+      }
+    };
+
     switch (user.role) {
-      case "Admin": setLoadMenu(AdminItems); break;
-      case "Candidate": setLoadMenu(CandidateItems); break;
-      case "Reviewer": setLoadMenu(ReviewerItems); break;
-      case "Recruiter": setLoadMenu(RecruiterItems); break;
-      case "Interviewer": setLoadMenu(InterviewerItems); break;
-      case "HR": setLoadMenu(HRItems); break;
-      case "Viewer": setLoadMenu(Viewer); break;
+      case "Admin":
+        setLoadMenu(AdminItems);
+        break;
+      case "Reviewer":
+        setLoadMenu(ReviewerItems);
+        break;
+      case "Recruiter":
+        setLoadMenu(RecruiterItems);
+        break;
+      case "Interviewer":
+        setLoadMenu(InterviewerItems);
+        break;
+      case "HR":
+        setLoadMenu(HRItems);
+        break;
+      case "Viewer":
+        setLoadMenu(Viewer);
+        break;
+      case "Candidate":
+        fetchIsEmplloyee();
+        break;
     }
 
     setPanelName(user.role);
@@ -130,10 +198,11 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-64"}
-        md:translate-x-0 md:static md:block`}>
-
+        md:translate-x-0 md:static md:block`}
+      >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-center h-16 border-b font-bold text-lg">
             {panelName} Panel
@@ -154,9 +223,10 @@ export default function Dashboard() {
                     setSidebarOpen(false);
                   }}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition
-                    ${activeMenu === item.path
-                      ? "bg-blue-500 text-white shadow"
-                      : "text-gray-700 hover:bg-gray-200"
+                    ${
+                      activeMenu === item.path
+                        ? "bg-blue-500 text-white shadow"
+                        : "text-gray-700 hover:bg-gray-200"
                     }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -173,7 +243,11 @@ export default function Dashboard() {
         {/* Header */}
         <header className="flex items-center justify-between h-16 px-6 bg-white shadow-md">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" className="md:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            <Button
+              variant="ghost"
+              className="md:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
               <Menu className="w-6 h-6" />
             </Button>
             <img src={Images.companyLogo} className="h-7 w-auto" />

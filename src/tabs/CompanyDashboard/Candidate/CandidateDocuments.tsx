@@ -200,7 +200,7 @@ export default function UploadCandidateDocuments() {
   return (
     <div className="">
       {allowUpload ? (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-2 bg-gray-50 min-h-screen">
           <h1 className="text-2xl font-semibold text-[#004080] mb-6">
             Upload Your Documents
           </h1>

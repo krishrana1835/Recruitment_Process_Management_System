@@ -73,7 +73,7 @@ export default function CandidateProfile() {
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-50 h-full p-4 sm:p-6">
+    <div className="flex justify-center items-center bg-gray-50 h-full p-2 sm:p-6">
       <Card className="w-full max-w-md shadow-lg border border-gray-200 rounded-lg bg-white text-black">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-black text-center sm:text-left">

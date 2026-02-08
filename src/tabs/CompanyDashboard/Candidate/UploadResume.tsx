@@ -123,7 +123,7 @@ export default function UploadResumePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-6">
+    <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-2">
       <Card className="w-full max-w-lg border border-gray-200 shadow-md rounded-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">

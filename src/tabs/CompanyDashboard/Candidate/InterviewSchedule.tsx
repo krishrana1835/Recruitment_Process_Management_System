@@ -9,6 +9,8 @@ import { fetchCandidateInterviwes } from "@/api/Interview_api";
 import { useAuth } from "@/route_protection/AuthContext";
 import { notify } from "@/components/custom/Notifications";
 import { fetchAppliedJobs } from "@/api/Candidate_Status_History_api";
+import { Isemployee } from "@/api/Employee_Records_api";
+import { useNavigate } from "react-router-dom";
 
 interface AppliedJob {
   job_id: number;
@@ -18,6 +20,7 @@ interface AppliedJob {
 
 export default function CandidateInterviewScheduleData() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [jobs, setJobs] = useState<AppliedJob[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
@@ -25,17 +28,18 @@ export default function CandidateInterviewScheduleData() {
     Record<number, CandidateInterview[]>
   >({});
   const [loadingJobId, setLoadingJobId] = useState<number | null>(null);
+  const [employee, setEmployee] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!user?.token) {
+      notify.error("User not authenticated");
+      return;
+    }
+    if (!user?.userId) {
+      notify.error("User id not found");
+      return;
+    }
     const fetchJobs = async () => {
-      if (!user?.token) {
-        notify.error("User not authenticated");
-        return;
-      }
-      if (!user?.userId) {
-        notify.error("User id not found");
-        return;
-      }
       try {
         const res = await fetchAppliedJobs(user.userId, user.token);
         setJobs(res);
@@ -43,8 +47,21 @@ export default function CandidateInterviewScheduleData() {
         notify.error(err.message);
       }
     };
+    const fetchIsEmplloyee = async () => {
+      try {
+        const response = await Isemployee(user?.userId, user.token);
+        setEmployee(response);
+      } catch (error: any) {
+        notify.error("Error", error.message);
+      }
+    };
+    fetchIsEmplloyee();
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    if (employee) navigate("/unauthorized");
+  }, [employee]);
 
   useEffect(() => {
     if (!selectedJobId) {
@@ -144,7 +161,8 @@ export default function CandidateInterviewScheduleData() {
       {jobs
         .filter(
           (job) =>
-            job.scheduled === "Scheduled" && interviewsByJob[job.job_id]?.length
+            job.scheduled === "Scheduled" &&
+            interviewsByJob[job.job_id]?.length,
         )
         .map((job) => (
           <div key={job.job_id} className="mb-10">
@@ -174,8 +192,8 @@ export default function CandidateInterviewScheduleData() {
       interview.status === "Selected"
         ? "bg-green-500 text-white"
         : interview.status === "Rejected"
-        ? "bg-red-600 text-white border-red/50 line-through"
-        : "bg-white text-black border-black"
+          ? "bg-red-600 text-white border-red/50 line-through"
+          : "bg-white text-black border-black"
     }
   `}
                     >

@@ -11,25 +11,32 @@ import { useAuth } from "@/route_protection/AuthContext";
 import { notify } from "@/components/custom/Notifications";
 import { getAllJobs } from "@/api/Job_api";
 import JobDetails from "./JobDetails";
+import { Isemployee } from "@/api/Employee_Records_api";
+import { useNavigate } from "react-router-dom";
 
 export default function OpenJobList() {
   const [jobs, setJobs] = useState<ListOpenJobsForCandidateDto[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [employee, setEmployee] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const { user } = useAuth();
 
   useEffect(() => {
+    if (!user) {
+      notify.error("User not authenticated.");
+      return;
+    }
+    if (!user.token) {
+      notify.error("User token not found.");
+      return;
+    }
     const loadJobs = async () => {
-      if (!user) {
-        notify.error("User not authenticated.");
-        return;
-      }
-      if (!user.token) {
-        notify.error("User token not found.");
-        return;
-      }
+      setLoading(true);
+      setError(null);
       try {
         const data = await getAllJobs(user?.token);
         const jobData = data.filter((job) => job.status.status === "Open");
@@ -40,8 +47,28 @@ export default function OpenJobList() {
         setLoading(false);
       }
     };
+
+    const fetchIsEmplloyee = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await Isemployee(user.userId, user.token);
+        setEmployee(response);
+      } catch (err: any) {
+        notify.error("Error", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchIsEmplloyee();
     loadJobs();
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (employee) {
+      navigate("/unauthorized");
+    }
+  }, [employee]);
 
   if (loading) {
     return (
